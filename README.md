@@ -15,3 +15,29 @@ The dumb discord bot is a service designed to run as a bot for discord servers (
     *	When the specified time is at or above the set alarm time, the dumb discord bot shall sound an alarm sound
 *	The dumb discord server shall play Danny Devito saying “HOORS” when the command !hoors is typed
 *	The client ID shall be specified through a configuration file or passed argument on startup
+
+## Release Plan
+1. Phase 1 - Service structure and basic sound playing abilities
+    * Interopablity between server and discord
+    * Bootable serivce
+        * Boot up self check
+        * Start discord service
+    * Logging
+2. Phase 2 - Business Intelligence 
+3. Phase 3 - Form S-corp and go public
+4. Phase 4 - Make lods-of-emone
+
+## Kick Off Schedule
+11/9/2017 - The kick off will include me drinking a PBR. Possibly wild turkey. 
+
+## Stakeholders 
+* Customers (Discord users)
+* US Govt, probably
+
+## Members
+* dot1q
+
+
+
+
+
