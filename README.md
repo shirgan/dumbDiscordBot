@@ -37,7 +37,23 @@ The dumb discord bot is a service designed to run as a bot for discord servers (
 ## Members
 * dot1q
 
+- - - -
 
+## Architecture
+
+### Overview
+This section aims to address the various types of components and data flows that the dumb discord bot will utilize. The dumb discord bot will be built with various enviornments in mind, and aim to be utilized on ARM, x86/x64 Linux and Windows Systems. The image below explains the various components and their connections. 
+
+-- PUT PICTURE HERE --
+
+### Stack
+1. Discord Client (Application/Presentation)
+2. Discord API (Transport)
+3. Dumb Discord Bot Controller (transport protocol not currently present)
+4. Back End Services
+
+### Dev Environment
+The development environment will consist of using nodeJS and gulp.
 
 
 
