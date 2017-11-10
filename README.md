@@ -28,7 +28,7 @@ The dumb discord bot is a service designed to run as a bot for discord servers (
 4. Phase 4 - Make lods-of-emone
 
 ## Kick Off Schedule
-11/9/2017 - The kick off will include me drinking a PBR. Possibly wild turkey. 
+11/9/2017 - The kick off will include me [drinking a PBR](https://i.imgur.com/6kaIJCj.jpg). Possibly wild turkey. 
 
 ## Stakeholders 
 * Customers (Discord users)
@@ -44,7 +44,8 @@ The dumb discord bot is a service designed to run as a bot for discord servers (
 ### Overview
 This section aims to address the various types of components and data flows that the dumb discord bot will utilize. The dumb discord bot will be built with various enviornments in mind, and aim to be utilized on ARM, x86/x64 Linux and Windows Systems. The image below explains the various components and their connections. 
 
--- PUT PICTURE HERE --
+![picture](https://i.imgur.com/0geEFBt.png)
+
 
 ### Stack
 1. Discord Client (Application/Presentation)
@@ -62,8 +63,8 @@ To set up a dev environment:
 3. Execute ```npm install```
 
 The following gulp commands
-* gulp clean
-* gulp copy
-* gulp build
-* gulp serve
+* ```gulp clean```
+* ```gulp copy```
+* ```gulp build```
+* ```gulp serve```
 
