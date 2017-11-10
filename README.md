@@ -28,7 +28,7 @@ The dumb discord bot is a service designed to run as a bot for discord servers (
 4. Phase 4 - Make lods-of-emone
 
 ## Kick Off Schedule
-11/9/2017 - The kick off will include me drinking a PBR. Possibly wild turkey. 
+11/9/2017 - The kick off will include me [drinking a PBR](https://i.imgur.com/6kaIJCj.jpg). Possibly wild turkey. 
 
 ## Stakeholders 
 * Customers (Discord users)
