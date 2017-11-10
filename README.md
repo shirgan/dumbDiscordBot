@@ -65,6 +65,6 @@ To set up a dev environment:
 The following gulp commands
 * ```gulp clean```
 * ```gulp copy```
-* ```gulp build```
+* ```gulp build:backend```
 * ```gulp serve```
 
