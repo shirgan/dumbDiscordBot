@@ -14,6 +14,7 @@ fms_files/
 .Trashes
 ehthumbs.db
 Thumbs.db
+npm-debug.log
 
 node_modules/
 /dist/
