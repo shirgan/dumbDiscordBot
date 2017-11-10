@@ -1,69 +1,60 @@
 'use strict';
-const fs = require('fs');
-const path = require('path');
-const Discord = require('discord.js');
-const client = new Discord.Client();
-const srcs_dup = [];
-let dirs = null;
 
-client.on('ready', () => {
-  console.log('I am ready!');
-  
+const {EventEmitter} = require('events');
+import * as config from './config/';
+import * as soundBlaster from './soundBlaster/index';
+import * as server from './server/server';
 
-  //Grabs a random index between 0 and length
-  function randomIndex(length) {
-    return Math.floor(Math.random() * (length));
-  }
+import logging from './logger/logging.module';
 
-  let DIR = "./assets/sounds/";
 
-  //Read the directory and get the files
-  dirs = fs.readdirSync(DIR)
-    .map(file => {
-      return path.join(DIR, file);
+/* other stuff here */
+const mediator = new EventEmitter();
+var logger = logging('dumbDiscordBot-service');
+
+
+logger.info('--- Dumb Discord Bot Service ---');
+logger.info('Loading configuration...');
+
+
+process.on('uncaughtException', (err) => {
+  logger.error('Unhandled Exception', err);
+});
+
+process.on('uncaughtRejection', (err, promise) => {
+  logger.error('Unhandled Rejection', err);
+});
+
+process.on('unhandledRejection', (err, promise) => {
+  logger.error('Unhandled Rejection', err);
+});
+
+mediator.on('discord.ready', (discord) => {
+  // Load parsing templates
+  logger.info("Discord client logged in.");
+  soundBlaster.connect(discord)
+    .then(soundRepo => {
+      return server.start({
+        soundRepo
+      });
+    })
+    .then(app => {
+      logger.info("Dumb Discord Bot Service started successfully.");
     });
 
-
 });
 
-
-let soundfile = (items) => {
-  return items[Math.floor(Math.random()*items.length)];
-};
-
-client.on('message', message => {
-  // Voice only works in guilds, if the message does not come from a guild,
-  // we ignore it
-  if (!message.guild) return;
-
-  if (message.content === '!test') {
-    // Only try to join the sender's voice channel if they are in one themselves
-    if (message.member.voiceChannel) {
-      message.member.voiceChannel.join()
-        .then(connection => { // Connection is an instance of VoiceConnection
-          
-          const dispatcher = connection.playFile('./'+soundfile(dirs) );
-          
-          dispatcher.on('end', () => {
-            message.channel.send("swag out", {
-              files: [
-                "./assets/images/fellowKids.png"
-              ]
-            });
-            message.member.voiceChannel.leave();
-          });
-
-          dispatcher.on('error', e => {
-            // Catch any errors that may arise
-            console.log(e);
-          });
-        })
-        .catch(console.log);
-    } else {
-      message.reply('You need to join a voice channel first!');
-    }
-  }
+mediator.on('discord.error', (err) => {
+  logger.error(err);
 });
 
-client.login('Mzc3OTkxMzc0OTE1NzY0MjI0.DOU_ng.P17_uLPg99S0-QjYpr4jR8BkcFA');
+mediator.on('generic.error', (err) => {
+  logger.error(err);
+});
 
+// get the db connection queue
+config.discord.connect(config.discordClientSettings, mediator);
+//config.imap.connect(config.locateSettings.imap, mediator);
+
+// emit that the service stript has finished
+mediator.emit('boot.ready');
