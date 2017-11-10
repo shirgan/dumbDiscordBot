@@ -62,8 +62,8 @@ To set up a dev environment:
 3. Execute ```npm install```
 
 The following gulp commands
-* gulp clean
-* gulp copy
-* gulp build
-* gulp serve
+* ```gulp clean```
+* ```gulp copy```
+* ```gulp build```
+* ```gulp serve```
 
