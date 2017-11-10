@@ -61,4 +61,9 @@ To set up a dev environment:
     2a. If using a windows machine execute ```npm install --global --production windows-build-tools```
 3. Execute ```npm install```
 
+The following gulp commands
+* gulp clean
+* gulp copy
+* gulp build
+* gulp serve
 
