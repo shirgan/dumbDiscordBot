@@ -55,5 +55,10 @@ This section aims to address the various types of components and data flows that
 ### Dev Environment
 The development environment will consist of using nodeJS and gulp.
 
+To set up a dev environment:
+1. Install latest versions of nodeJS and NPM
+2. clone git repo
+    2a. If using a windows machine execute ```npm install --global --production windows-build-tools```
+3. Execute ```npm install```
 
 
