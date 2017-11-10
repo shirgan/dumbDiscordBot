@@ -9,8 +9,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "bufferutil": "^3.0.3",
     "discord.js": "^11.2.1",
-    "node-gyp": "^3.6.2"
+    "ffmpeg-binaries": "^3.2.2-3",
+    "fs": "0.0.1-security",
+    "node-opus": "^0.2.7",
+    "opusscript": "0.0.4",
+    "path": "^0.12.7"
   }
 }
