@@ -1,46 +1,44 @@
 'use strict';
+import fs from 'fs';
 import path from 'path';
 
 const soundController = (mediator, discordClient) => {
   let discordMessageObj = null;
   let discordConnectionObj = null;
+  let discordVoiceChannel = null;
   let soundQueue = [];
+  let soundFiles = [];
+  let soundFilesDir = path.join(__dirname, '../assets/sounds/rando');
+  soundFiles = fs.readdirSync(soundFilesDir)
+  .map(file => {
+    return path.join(soundFilesDir, file);
+  });  
   
   const soundTriggerListner = (options) => {
     
     //const {} = options;
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {   // lol
       discordClient.on('message', message => {
-        // Add the voice triggers here
-        if (message.content === '!test') {
+        if (message.content === '!rando') {
           if (message.member.voiceChannel) {
             message.member.voiceChannel.join()
             .then(connection => { // Connection is an instance of VoiceConnection
               discordMessageObj = message;
+              discordVoiceChannel = message.member.voiceChannel;
               discordConnectionObj = connection;
               
-              console.log(soundQueue.length);
+              mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
+              
               if(!soundQueue.length) {
-                soundQueue.push({fileName: path.join(__dirname, '../assets/sounds/beans.wav')});
+                soundQueue.push({fileName: getSoundFile(soundFiles)});
                 mediator.emit('soundBlaster:newSound', 0);  // probably not efficent, but oh well
               } else {
-                soundQueue.push({fileName: path.join(__dirname, '../assets/sounds/beans.wav')});
-                
+                soundQueue.push({fileName: getSoundFile(soundFiles)});
               }
               
-              //console.log(connection);
-              //const dispatcher = connection.playFile('./'+soundfile(dirs) );
-              //const dispatcher = connection.playFile('./assets/sounds/tron-yeah.wav');
-              //console.log(dispatcher);
-              
-            /*  dispatcher.on('end', () => {
-                message.member.voiceChannel.leave();
-              });*/
             })
             .catch(console.log);
             
-            
-          
           } else {
             message.reply('Dude, you need to be in a voice channel to here me!');
           }
@@ -52,15 +50,29 @@ const soundController = (mediator, discordClient) => {
   
   const soundProcessor = (options, soundObj) => {
     mediator.on('soundBlaster:newSound', (value) => {
+      mediator.emit('generic.log', 'Playing sound: '+ soundQueue[value].fileName);
       const dispatcher = discordConnectionObj.playFile(soundQueue[value].fileName);
+      
+      mediator.on('soundBlaster:halt', () => {
+        dispatcher.end();
+      });
       
       dispatcher.on('end', () => {
         playNextSoundInQueue()
         
       });
     });
-
   }
+  
+  const soundHalter = () => {
+    discordClient.on('message', message => {
+      if (message.content === '!stop') {
+        mediator.emit('generic.log', 'Halting all playing sounds...');
+        soundQueue = []; // dump all queued items
+        mediator.emit('soundBlaster:halt');
+      }
+    });
+  };
   
   const playNextSoundInQueue = () => {
     soundQueue.splice(0, 1);    // remove the first element and re-shuffle
@@ -68,13 +80,19 @@ const soundController = (mediator, discordClient) => {
     if (soundQueue.length != 0 ){
       mediator.emit('soundBlaster:newSound', 0);
     } else {
-      discordMessageObj.member.voiceChannel.leave();
+      mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
+      discordVoiceChannel.leave();
     }
   };
   
+  let getSoundFile = (items) => {
+    return items[Math.floor(Math.random()*items.length)];
+  };
+
   return Object.create({
     soundTriggerListner,
-    soundProcessor
+    soundProcessor,
+    soundHalter
   });
 };
 

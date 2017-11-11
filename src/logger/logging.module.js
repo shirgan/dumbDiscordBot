@@ -11,6 +11,7 @@ module.exports = function(module_name) {
       fs.mkdirSync( logDir );
   }
   return new (winston.Logger)({
+      level: 'debug',
       transports: [
           new (winston.transports.Console)({
               colorize: 'all'

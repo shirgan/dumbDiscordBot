@@ -51,6 +51,10 @@ mediator.on('generic.error', (err) => {
   logger.error(err);
 });
 
+mediator.on('generic.log', (msg) => {
+  logger.verbose(msg);
+});
+
 // get the db connection queue
 config.discord.connect(config.discordClientSettings, mediator);
 //config.imap.connect(config.locateSettings.imap, mediator);

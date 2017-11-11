@@ -9,6 +9,7 @@ const start = (options) => {
     //options.locateRepo.getMailAndParse(options);
     options.soundRepo.soundTriggerListner();
     options.soundRepo.soundProcessor();
+    options.soundRepo.soundHalter();
     
     /*if (!options.port) {
       reject(new Error('The server must be started with an available port'));
