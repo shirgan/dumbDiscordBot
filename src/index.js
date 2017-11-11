@@ -30,9 +30,8 @@ process.on('unhandledRejection', (err, promise) => {
 });
 
 mediator.on('discord.ready', (discord) => {
-  // Load parsing templates
   logger.info("Discord client logged in.");
-  soundBlaster.connect(discord)
+  soundBlaster.connect(mediator, discord)
     .then(soundRepo => {
       return server.start({
         soundRepo
