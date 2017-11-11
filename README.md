@@ -9,6 +9,8 @@ The dumb discord bot is a service designed to run as a bot for discord servers (
 *	The dumb discord bot shall incorporate configuration and error checking on startup
 *	The dumb discord bot shall be a good bot
 *	The dumb discord bot may pick images and sounds at random to play or post
+    * The dumb discord bot shall post images and messages upon voice channel departure
+        * Random, somewhat relevant images shall be posted 25% of the time
 *	When the dumb discord bot reads the command !rando, it shall randomly select a sound to play
 *	When the dumb discord bot reads the command !stop, it shall stop all currently playing sounds
 *	When the dumb discord bot reads the command !alarm <24 hour time>, it shall set an alarm for the specified time
@@ -68,4 +70,7 @@ The following gulp commands
 * ```gulp copy```
 * ```gulp build:backend```
 * ```gulp serve```
+
+# Exception handling
+All exceptions will be handled within the main thread of the application. Mediator broadcasts of unhandled or unexpected exceptions will be handeled the same, unless specific module requirements specify otherwise. All exceptions will be logged using the applications logger. 
 
