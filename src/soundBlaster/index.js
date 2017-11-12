@@ -7,12 +7,21 @@ const soundController = (mediator, discordClient) => {
   let discordConnectionObj = null;
   let discordVoiceChannel = null;
   let soundQueue = [];
-  let soundFiles = [];
-  let soundFilesDir = path.join(__dirname, '../assets/sounds/rando');
-  soundFiles = fs.readdirSync(soundFilesDir)
-  .map(file => {
-    return path.join(soundFilesDir, file);
-  });  
+  //let randoSoundFiles = [];
+  
+  
+  let randoFilePath = path.join(__dirname, '../assets/sounds/rando');
+  let hoorsFilePath = path.join(__dirname, '../assets/sounds/hoors');
+
+  const generateSoundFileList = (dir) => {
+    return fs.readdirSync(dir)
+    .map(file => {
+      return path.join(dir, file);
+    }); 
+  };
+  
+  let randoSoundFiles = generateSoundFileList(randoFilePath);
+  let hoorsSoundFiles = generateSoundFileList(hoorsFilePath);
   
   const soundTriggerListner = (options) => {
     
@@ -20,29 +29,16 @@ const soundController = (mediator, discordClient) => {
     return new Promise((resolve, reject) => {   // lol
       discordClient.on('message', message => {
         if (message.content === '!rando') {
-          if (message.member.voiceChannel) {
-            message.member.voiceChannel.join()
-            .then(connection => { // Connection is an instance of VoiceConnection
-              discordMessageObj = message;
-              discordVoiceChannel = message.member.voiceChannel;
-              discordConnectionObj = connection;
-              
-              mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
-              
-              if(!soundQueue.length) {
-                soundQueue.push({fileName: getSoundFile(soundFiles)});
-                mediator.emit('soundBlaster:newSound', 0);  // probably not efficent, but oh well
-              } else {
-                soundQueue.push({fileName: getSoundFile(soundFiles)});
-              }
-              
-            })
-            .catch(console.log);
-            
-          } else {
-            message.reply('Dude, you need to be in a voice channel to here me!');
-          }
+          joinVoiceChannel(message).then(() => {
+            addToQueue(getSoundFile(randoSoundFiles));
+          });
+        } else if (message.content === '!hoors') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(getSoundFile(hoorsSoundFiles));
+          });
         }
+        
+        
       });
     });
   };
@@ -50,6 +46,7 @@ const soundController = (mediator, discordClient) => {
   
   const soundProcessor = (options, soundObj) => {
     mediator.on('soundBlaster:newSound', (value) => {
+      mediator.removeAllListeners('soundBlaster:halt', () => { return; });
       mediator.emit('generic.log', 'Playing sound: '+ soundQueue[value].fileName);
       const dispatcher = discordConnectionObj.playFile(soundQueue[value].fileName);
       
@@ -59,10 +56,48 @@ const soundController = (mediator, discordClient) => {
       
       dispatcher.on('end', () => {
         playNextSoundInQueue()
-        
       });
     });
   }
+  
+  const joinVoiceChannel = (message) => {
+    return new Promise((resolve, reject) => {
+      if (message.member.voiceChannel) {
+        message.member.voiceChannel.join()
+        .then(connection => { // Connection is an instance of VoiceConnection
+          discordMessageObj = message;
+          discordVoiceChannel = message.member.voiceChannel;
+          discordConnectionObj = connection;
+          
+          mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
+          
+          resolve();
+          
+          /*if(!soundQueue.length) {
+            soundQueue.push({fileName: getSoundFile(soundFiles)});
+            mediator.emit('soundBlaster:newSound', 0);  // probably not efficent, but oh well
+          } else {
+            soundQueue.push({fileName: getSoundFile(soundFiles)});
+          }*/
+          
+        })
+        .catch(console.log);
+        
+      } else {
+        message.reply('Dude, you need to be in a voice channel to here me!');
+        reject();
+      }
+    });
+  };
+  
+  const addToQueue = (filename) => {
+    if(!soundQueue.length) {
+      soundQueue.push({fileName: filename});
+      mediator.emit('soundBlaster:newSound', 0);  // probably not efficent, but oh well
+    } else {
+      soundQueue.push({fileName: filename});
+    }
+  };
   
   const soundHalter = () => {
     discordClient.on('message', message => {
