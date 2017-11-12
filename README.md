@@ -21,7 +21,7 @@ The dumb discord bot is a service designed to run as a bot for discord servers (
 
 ## Release Plan
 1. Phase 1 - Service structure and basic sound playing abilities
-    * Interopablity between server and discord
+    * Interopablity between server and discord (ACTIVE)
     * Bootable serivce
         * Boot up self check
         * Start discord service
