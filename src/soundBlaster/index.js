@@ -9,9 +9,13 @@ const soundController = (mediator, discordClient) => {
   let soundQueue = [];
   //let randoSoundFiles = [];
   
-  
+  // sounds
   let randoFilePath = path.join(__dirname, '../assets/sounds/rando');
   let hoorsFilePath = path.join(__dirname, '../assets/sounds/hoors');
+  let dootFilePath = path.join(__dirname, '../assets/sounds/doot');
+  
+  // images
+  let departureImagesPath = path.join(__dirname, '../assets/images');
 
   const generateSoundFileList = (dir) => {
     return fs.readdirSync(dir)
@@ -22,6 +26,8 @@ const soundController = (mediator, discordClient) => {
   
   let randoSoundFiles = generateSoundFileList(randoFilePath);
   let hoorsSoundFiles = generateSoundFileList(hoorsFilePath);
+  let dootSoundFiles = generateSoundFileList(dootFilePath);
+  let departureImageFiles = generateSoundFileList(departureImagesPath);
   
   const soundTriggerListner = (options) => {
     
@@ -30,15 +36,17 @@ const soundController = (mediator, discordClient) => {
       discordClient.on('message', message => {
         if (message.content === '!rando') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(getSoundFile(randoSoundFiles));
+            addToQueue(getRandomFile(randoSoundFiles));
           });
-        } else if (message.content === '!hoors') {
+        } else if (message.content === '!hoors' || message.content === '!hoor') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(getSoundFile(hoorsSoundFiles));
+            addToQueue(getRandomFile(hoorsSoundFiles));
+          });
+        } else if (message.content === '!doot') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(getRandomFile(dootSoundFiles));
           });
         }
-        
-        
       });
     });
   };
@@ -72,14 +80,6 @@ const soundController = (mediator, discordClient) => {
           mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
           
           resolve();
-          
-          /*if(!soundQueue.length) {
-            soundQueue.push({fileName: getSoundFile(soundFiles)});
-            mediator.emit('soundBlaster:newSound', 0);  // probably not efficent, but oh well
-          } else {
-            soundQueue.push({fileName: getSoundFile(soundFiles)});
-          }*/
-          
         })
         .catch(console.log);
         
@@ -115,12 +115,22 @@ const soundController = (mediator, discordClient) => {
     if (soundQueue.length != 0 ){
       mediator.emit('soundBlaster:newSound', 0);
     } else {
+      let chance = Math.floor(Math.random()*3);
+      console.log(chance);
+      if(chance === 2) {
+        discordMessageObj.channel.send("swag out", {
+          files: [
+            getRandomFile(departureImageFiles)
+          ]
+        });
+      }
+      
       mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
       discordVoiceChannel.leave();
     }
   };
   
-  let getSoundFile = (items) => {
+  let getRandomFile = (items) => {
     return items[Math.floor(Math.random()*items.length)];
   };
 
