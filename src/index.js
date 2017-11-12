@@ -3,6 +3,7 @@
 const {EventEmitter} = require('events');
 import * as config from './config/';
 import * as soundBlaster from './soundBlaster/index';
+import * as client from './client/index';
 import * as server from './server/server';
 
 import logging from './logger/logging.module';
@@ -31,16 +32,19 @@ process.on('unhandledRejection', (err, promise) => {
 
 mediator.on('discord.ready', (discord) => {
   logger.info("Discord client logged in.");
-  soundBlaster.connect(mediator, discord)
-    .then(soundRepo => {
-      return server.start({
-        soundRepo
-      });
-    })
-    .then(app => {
-      logger.info("Dumb Discord Bot Service started successfully.");
+  client.connect(mediator, discord)
+    .then(clientRepo => {
+      soundBlaster.connect(mediator, discord)
+        .then(soundRepo => {
+          return server.start({
+            soundRepo,
+            clientRepo
+          });
+        })
+        .then(app => {
+          logger.info("Dumb Discord Bot Service started successfully.");
+        });
     });
-
 });
 
 mediator.on('discord.error', (err) => {

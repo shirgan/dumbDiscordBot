@@ -13,6 +13,7 @@ const soundController = (mediator, discordClient) => {
   let randoFilePath = path.join(__dirname, '../assets/sounds/rando');
   let hoorsFilePath = path.join(__dirname, '../assets/sounds/hoors');
   let dootFilePath = path.join(__dirname, '../assets/sounds/doot');
+  let dukeFile = path.join(__dirname, '../assets/sounds/rando/Duke_Alex_Hollis_02.wav');
   
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
@@ -45,6 +46,10 @@ const soundController = (mediator, discordClient) => {
         } else if (message.content === '!doot') {
           joinVoiceChannel(message).then(() => {
             addToQueue(getRandomFile(dootSoundFiles));
+          });
+        } else if (message.content === '!duke') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(dukeFile);
           });
         }
       });
@@ -115,9 +120,8 @@ const soundController = (mediator, discordClient) => {
     if (soundQueue.length != 0 ){
       mediator.emit('soundBlaster:newSound', 0);
     } else {
-      let chance = Math.floor(Math.random()*3);
-      console.log(chance);
-      if(chance === 2) {
+      let chance = Math.floor(Math.random()*10);
+      if(chance === 9) {
         discordMessageObj.channel.send("swag out", {
           files: [
             getRandomFile(departureImageFiles)

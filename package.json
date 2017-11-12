@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "alexa-sdk": "^1.0.19",
     "discord.js": "^11.2.1",
     "ffmpeg-binaries": "^3.2.2-3",
     "fs": "0.0.1-security",
