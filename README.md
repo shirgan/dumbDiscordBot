@@ -69,7 +69,7 @@ The following gulp commands
 * ```gulp clean```
 * ```gulp copy```
 * ```gulp build:backend```
-* ```gulp serve```
+* ```gulp serve:backend```
 
 # Exception handling
 All exceptions will be handled within the main thread of the application. Mediator broadcasts of unhandled or unexpected exceptions will be handeled the same, unless specific module requirements specify otherwise. All exceptions will be logged using the applications logger. 
