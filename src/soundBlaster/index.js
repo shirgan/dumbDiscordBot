@@ -14,6 +14,7 @@ const soundController = (mediator, discordClient) => {
   let hoorsFilePath = path.join(__dirname, '../assets/sounds/hoors');
   let dootFilePath = path.join(__dirname, '../assets/sounds/doot');
   let dukeFile = path.join(__dirname, '../assets/sounds/rando/Duke_Alex_Hollis_02.wav');
+  let rimshotFile = path.join(__dirname, '../assets/sounds/rimshot/rim.mp3');
   
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
@@ -50,6 +51,10 @@ const soundController = (mediator, discordClient) => {
         } else if (message.content === '!duke') {
           joinVoiceChannel(message).then(() => {
             addToQueue(dukeFile);
+          });
+        } else if (message.content === '!rim' || message.content === '!rimshot' || message.content === '!rimjob') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(rimshotFile);
           });
         }
       });
