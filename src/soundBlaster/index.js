@@ -89,7 +89,7 @@ const soundController = (mediator, discordClient) => {
         .catch(console.log);
         
       } else {
-        message.reply('Dude, you need to be in a voice channel to here me!');
+        message.reply('Dude, you need to be in a voice channel to hear me!');
         reject();
       }
     });
