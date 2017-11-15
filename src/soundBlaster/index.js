@@ -18,7 +18,8 @@ const soundController = (mediator, discordClient) => {
   let gotemPath = path.join(__dirname, '../assets/sounds/gotem/');
   let dukeFile = path.join(__dirname, '../assets/sounds/rando/Duke_Alex_Hollis_02.wav');
   let rimshotFile = path.join(__dirname, '../assets/sounds/rimshot/rim.mp3');
-  
+  let city14Path = path.join(__dirname, '../assets/sounds/city14')
+
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
 
@@ -38,6 +39,7 @@ const soundController = (mediator, discordClient) => {
   let beepSoundFiles = generateSoundFileList(beepFilePath);
   let lolSoundFiles = generateSoundFileList(lolFilePath);
   let gotemSoundFiles = generateSoundFileList(gotemPath);
+  let city14SoundFiles = generateSoundFileList(gotemPath);
   let departureImageFiles = generateSoundFileList(departureImagesPath);
   
   const soundTriggerListner = (options) => {
@@ -80,6 +82,16 @@ const soundController = (mediator, discordClient) => {
         } else if (message.content === 'no' || message.content === 'noo' || message.content === 'nooo') {
           joinVoiceChannel(message).then(() => {
             addToQueue(path.join(__dirname, '../assets/sounds/static/nooo.mp3'));
+          });
+        } else if (message.content === '!city14') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(getRandomFile(city14SoundFiles));
+          });
+        } else if (message.content === '!img' || message.content === '!image') {
+          discordMessageObj.channel.send("Is this what you wanted to see?", {
+            files: [
+              getRandomFile(departureImageFiles)
+            ]
           });
         }
       });
