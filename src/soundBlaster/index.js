@@ -13,6 +13,9 @@ const soundController = (mediator, discordClient) => {
   let randoFilePath = path.join(__dirname, '../assets/sounds/rando');
   let hoorsFilePath = path.join(__dirname, '../assets/sounds/hoors');
   let dootFilePath = path.join(__dirname, '../assets/sounds/doot');
+  let beepFilePath = path.join(__dirname, '../assets/sounds/beep');
+  let lolFilePath = path.join(__dirname, '../assets/sounds/lol');
+  let gotemPath = path.join(__dirname, '../assets/sounds/gotem/');
   let dukeFile = path.join(__dirname, '../assets/sounds/rando/Duke_Alex_Hollis_02.wav');
   let rimshotFile = path.join(__dirname, '../assets/sounds/rimshot/rim.mp3');
   
@@ -21,14 +24,20 @@ const soundController = (mediator, discordClient) => {
 
   const generateSoundFileList = (dir) => {
     return fs.readdirSync(dir)
+    .filter(file => {
+        return path.extname(file).match("^(\.(wav|mp3))$")
+    })
     .map(file => {
-      return path.join(dir, file);
-    }); 
+        return path.join(dir, file);
+    });
   };
   
   let randoSoundFiles = generateSoundFileList(randoFilePath);
   let hoorsSoundFiles = generateSoundFileList(hoorsFilePath);
   let dootSoundFiles = generateSoundFileList(dootFilePath);
+  let beepSoundFiles = generateSoundFileList(beepFilePath);
+  let lolSoundFiles = generateSoundFileList(lolFilePath);
+  let gotemSoundFiles = generateSoundFileList(gotemPath);
   let departureImageFiles = generateSoundFileList(departureImagesPath);
   
   const soundTriggerListner = (options) => {
@@ -48,6 +57,10 @@ const soundController = (mediator, discordClient) => {
           joinVoiceChannel(message).then(() => {
             addToQueue(getRandomFile(dootSoundFiles));
           });
+        } else if (message.content === '!beep') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(getRandomFile(beepSoundFiles));
+          });
         } else if (message.content === '!duke') {
           joinVoiceChannel(message).then(() => {
             addToQueue(dukeFile);
@@ -55,6 +68,18 @@ const soundController = (mediator, discordClient) => {
         } else if (message.content === '!rim' || message.content === '!rimshot' || message.content === '!rimjob') {
           joinVoiceChannel(message).then(() => {
             addToQueue(rimshotFile);
+          });
+        } else if (message.content === '!lol' || message.content === 'lol' || message.content === 'lel' || message.content === 'lul') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(lolSoundFiles);
+          });
+        } else if (message.content === 'gotem') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(getRandomFile(gotemSoundFiles));
+          });
+        } else if (message.content === 'no' || message.content === 'noo' || message.content === 'nooo') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(path.join(__dirname, '../assets/sounds/static/nooo.mp3'));
           });
         }
       });
@@ -70,6 +95,7 @@ const soundController = (mediator, discordClient) => {
       
       mediator.on('soundBlaster:halt', () => {
         dispatcher.end();
+        addToQueue(path.join(__dirname, '../assets/sounds/static/stop.wav'));
       });
       
       dispatcher.on('end', () => {

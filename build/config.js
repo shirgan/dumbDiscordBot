@@ -10,7 +10,8 @@ export default {
       'src/**/*.js'
     ],
     backEndTemplates: [
-      'src/**/*'
+      'src/**/*',
+      '!src/**/*.js'
     ],
     templates: [
       //'src/**/{fixtures,templates}/**',
@@ -32,7 +33,8 @@ export default {
       //'src/**/*.sass',
       //'src/**/templates/**/.*'
     ],
-    destDir: "dist"
+    destDir: "dist",
+    targetDir: "target"
   },
   test: {
     
