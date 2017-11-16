@@ -3,10 +3,10 @@ import fs from 'fs';
 import path from 'path';
 
 const clientController = (mediator, discordClient) => {
-  
+
   const setClientSettings = (options) => {
     return new Promise((resolve, reject) => {   // lol
-      discordClient.user.setUsername('Dumber Discord Bot');
+      discordClient.user.setUsername('Dumb Discord Bot');
       discordClient.user.setGame('your favorite memes since 2017');
     });
   };
