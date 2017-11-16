@@ -7,7 +7,6 @@ const soundController = (mediator, discordClient) => {
   let discordConnectionObj = null;
   let discordVoiceChannel = null;
   let soundQueue = [];
-  //let randoSoundFiles = [];
   
   // sounds
   let randoFilePath = path.join(__dirname, '../assets/sounds/rando');
@@ -18,7 +17,8 @@ const soundController = (mediator, discordClient) => {
   let gotemPath = path.join(__dirname, '../assets/sounds/gotem/');
   let dukeFile = path.join(__dirname, '../assets/sounds/rando/Duke_Alex_Hollis_02.wav');
   let rimshotFile = path.join(__dirname, '../assets/sounds/rimshot/rim.mp3');
-  
+  let city14Path = path.join(__dirname, '../assets/sounds/city14')
+
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
 
@@ -31,6 +31,13 @@ const soundController = (mediator, discordClient) => {
         return path.join(dir, file);
     });
   };
+
+  const generateImageFileList = (dir) => {
+    return fs.readdirSync(dir)
+    .map(file => {
+        return path.join(dir, file);
+    });
+  };
   
   let randoSoundFiles = generateSoundFileList(randoFilePath);
   let hoorsSoundFiles = generateSoundFileList(hoorsFilePath);
@@ -38,11 +45,11 @@ const soundController = (mediator, discordClient) => {
   let beepSoundFiles = generateSoundFileList(beepFilePath);
   let lolSoundFiles = generateSoundFileList(lolFilePath);
   let gotemSoundFiles = generateSoundFileList(gotemPath);
-  let departureImageFiles = generateSoundFileList(departureImagesPath);
+  let city14SoundFiles = generateSoundFileList(city14Path);
+  let departureImageFiles = generateImageFileList(departureImagesPath);
   
-  const soundTriggerListner = (options) => {
-    
-    //const {} = options;
+  const soundTriggerListener = (options) => {
+
     return new Promise((resolve, reject) => {   // lol
       discordClient.on('message', message => {
         if (message.content === '!rando') {
@@ -81,11 +88,20 @@ const soundController = (mediator, discordClient) => {
           joinVoiceChannel(message).then(() => {
             addToQueue(path.join(__dirname, '../assets/sounds/static/nooo.mp3'));
           });
+        } else if (message.content === '!city14') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(getRandomFile(city14SoundFiles));
+          });
+        } else if (message.content === '!img' || message.content === '!image') {
+          message.channel.send("Is this what you wanted to see?", {
+            files: [
+              getRandomFile(departureImageFiles)
+            ]
+          });
         }
       });
     });
   };
-  
   
   const soundProcessor = (options, soundObj) => {
     mediator.on('soundBlaster:newSound', (value) => {
@@ -170,12 +186,11 @@ const soundController = (mediator, discordClient) => {
   };
 
   return Object.create({
-    soundTriggerListner,
+    soundTriggerListener,
     soundProcessor,
     soundHalter
   });
 };
-
 
 const connect = (mediator, connection) => {
   return new Promise((resolve, reject) => {
