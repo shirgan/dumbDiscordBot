@@ -7,7 +7,6 @@ const soundController = (mediator, discordClient) => {
   let discordConnectionObj = null;
   let discordVoiceChannel = null;
   let soundQueue = [];
-  //let randoSoundFiles = [];
   
   // sounds
   let randoFilePath = path.join(__dirname, '../assets/sounds/rando');
@@ -32,6 +31,13 @@ const soundController = (mediator, discordClient) => {
         return path.join(dir, file);
     });
   };
+
+  const generateImageFileList = (dir) => {
+    return fs.readdirSync(dir)
+    .map(file => {
+        return path.join(dir, file);
+    });
+  };
   
   let randoSoundFiles = generateSoundFileList(randoFilePath);
   let hoorsSoundFiles = generateSoundFileList(hoorsFilePath);
@@ -39,12 +45,11 @@ const soundController = (mediator, discordClient) => {
   let beepSoundFiles = generateSoundFileList(beepFilePath);
   let lolSoundFiles = generateSoundFileList(lolFilePath);
   let gotemSoundFiles = generateSoundFileList(gotemPath);
-  let city14SoundFiles = generateSoundFileList(gotemPath);
-  let departureImageFiles = generateSoundFileList(departureImagesPath);
+  let city14SoundFiles = generateSoundFileList(city14Path);
+  let departureImageFiles = generateImageFileList(departureImagesPath);
   
-  const soundTriggerListner = (options) => {
-    
-    //const {} = options;
+  const soundTriggerListener = (options) => {
+
     return new Promise((resolve, reject) => {   // lol
       discordClient.on('message', message => {
         if (message.content === '!rando') {
@@ -88,7 +93,7 @@ const soundController = (mediator, discordClient) => {
             addToQueue(getRandomFile(city14SoundFiles));
           });
         } else if (message.content === '!img' || message.content === '!image') {
-          discordMessageObj.channel.send("Is this what you wanted to see?", {
+          message.channel.send("Is this what you wanted to see?", {
             files: [
               getRandomFile(departureImageFiles)
             ]
@@ -97,7 +102,6 @@ const soundController = (mediator, discordClient) => {
       });
     });
   };
-  
   
   const soundProcessor = (options, soundObj) => {
     mediator.on('soundBlaster:newSound', (value) => {
@@ -182,12 +186,11 @@ const soundController = (mediator, discordClient) => {
   };
 
   return Object.create({
-    soundTriggerListner,
+    soundTriggerListener,
     soundProcessor,
     soundHalter
   });
 };
-
 
 const connect = (mediator, connection) => {
   return new Promise((resolve, reject) => {
