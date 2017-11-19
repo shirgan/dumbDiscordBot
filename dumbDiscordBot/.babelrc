@@ -1,0 +1,11 @@
+{
+  "presets": ["es2015"],
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "ol-debug.js",
+    "ol.js",
+    "rex.default.config.js",
+    "dist"
+  ]
+}
