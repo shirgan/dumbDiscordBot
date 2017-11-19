@@ -3,6 +3,8 @@
 const {EventEmitter} = require('events');
 import * as config from './config/';
 import * as soundBlaster from './soundBlaster/index';
+import * as messageBlaster from './messageBlaster/index';
+import * as imageBlaster from './imageBlaster/index';
 import * as client from './client/index';
 import * as server from './server/server';
 
@@ -34,16 +36,33 @@ mediator.on('discord.ready', (discord) => {
   logger.info("Discord client logged in.");
   client.connect(mediator, discord)
     .then(clientRepo => {
-      soundBlaster.connect(mediator, discord)
-        .then(soundRepo => {
-          return server.start({
-            soundRepo,
-            clientRepo
-          });
+      
+      messageBlaster.connect(mediator, discord)
+        .then(messageRepo => {
+          logger.info("MessageBlaster has connected.");
+          
+          imageBlaster.connect(mediator, discord) 
+            .then(imageRepo => {
+              logger.info ("ImageBlaster has connected.");
+                
+            soundBlaster.connect(mediator, discord)
+              .then(soundRepo => {
+                logger.info("SoundBlaster has connected.");
+                
+                return server.start({
+                  messageRepo,
+                  imageRepo,
+                  soundRepo,
+                  clientRepo
+                });
+              });
+              
+            })
         })
         .then(app => {
           logger.info("Dumb Discord Bot Service started successfully.");
         });
+
     });
 });
 
