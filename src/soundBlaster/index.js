@@ -39,6 +39,7 @@ const soundController = (mediator, discordClient) => {
   let dukeFile = path.join(__dirname, '../assets/sounds/rando/Duke_Alex_Hollis_02.wav');
   let rimshotFile = path.join(__dirname, '../assets/sounds/rimshot/rim.mp3');
   let city14Path = path.join(__dirname, '../assets/sounds/city14')
+  let h3h3Path = path.join(__dirname, '../assets/sounds/h3h3')
 
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
@@ -50,6 +51,7 @@ const soundController = (mediator, discordClient) => {
   let lolSoundFiles = generateSoundFileList(lolFilePath);
   let gotemSoundFiles = generateSoundFileList(gotemPath);
   let city14SoundFiles = generateSoundFileList(city14Path);
+  let h3h3SoundFiles = generateSoundFileList(h3h3Path);
   let departureImageFiles = generateImageFileList(departureImagesPath);
 
   
@@ -100,6 +102,10 @@ const soundController = (mediator, discordClient) => {
         } else if (message.content === '!dab') {
           joinVoiceChannel(message).then(() => {
             addToQueue(path.join(__dirname, '../assets/sounds/static/dab.wav'));
+          });
+        } else if (message.content === '!h3h3') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(getRandomFile(h3h3SoundFiles));
           });
         }
         
