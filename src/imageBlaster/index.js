@@ -35,28 +35,6 @@ const messageController = (mediator, discordClient) => {
               getRandomFile(departureImageFiles)
             ]
           });
-        } else if (message.content === "!help") {
-          message.channel.send({embed: {
-              color: 3447003,
-              title: "Project Wiki Help Page Thinger",
-              url: "https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page",
-              description: "Attention users, please hold on! The saws are on the way!",
-              fields: [{
-                  name: "Sound Triggers",
-                  value: "!rando\n!hoors\n!doot\n\!beep\n!duke\n!rimjob\ngotem\nno\n!city14\n!dab\r!h3h3"
-                },
-                {
-                  name: "Image Triggers",
-                  value: "!img"
-                }
-              ],
-              timestamp: new Date(),
-              footer: {
-                //icon_url: discordClient.client.user.avatarURL,
-                text: "© Deez nuts"
-              }
-            }
-          });
         }
       }
     };
