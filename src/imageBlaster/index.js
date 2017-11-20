@@ -1,6 +1,7 @@
 'use strict';
 import fs from 'fs';
 import path from 'path';
+import util from 'util';
 
 const generateImageFileList = (dir) => {
   return fs.readdirSync(dir)
@@ -39,8 +40,6 @@ const messageController = (mediator, discordClient) => {
     };
   }
   
-
-
   return Object.create({
     imageProcessor
   });
