@@ -6,7 +6,7 @@ const clientController = (mediator, discordClient) => {
 
   const setClientSettings = (options) => {
     return new Promise((resolve, reject) => {   // lol
-      discordClient.user.setUsername('Dumb Discord Bot');
+      //discordClient.user.setUsername('Dumb Discord Bot');
       discordClient.user.setGame('your favorite memes since 2017');
     });
   };

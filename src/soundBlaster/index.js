@@ -135,21 +135,23 @@ const soundController = (mediator, discordClient) => {
   const joinVoiceChannel = (message) => {
     return new Promise((resolve, reject) => {
       if (message.member.voiceChannel) {
-        message.member.voiceChannel.join()
-        .then(connection => { // Connection is an instance of VoiceConnection
-          discordMessageObj = message;
-          discordVoiceChannel = message.member.voiceChannel;
-          discordConnectionObj = connection;
-          
-          mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
-          
+        if (message.member.voiceChannel !== discordVoiceChannel) {
+          message.member.voiceChannel.join()
+          .then(connection => { // Connection is an instance of VoiceConnection
+            discordMessageObj = message;
+            discordVoiceChannel = message.member.voiceChannel;
+            discordConnectionObj = connection;
+            
+            mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
+            
+            resolve();
+          });
+        } else {
           resolve();
-        })
-        .catch(console.log);
+        }
         
       } else {
         message.reply('Dude, you need to be in a voice channel to hear me!');
-        reject();
       }
     });
   };
@@ -179,17 +181,26 @@ const soundController = (mediator, discordClient) => {
     if (soundQueue.length != 0 ){
       mediator.emit('soundBlaster:newSound', 0);
     } else {
-      let chance = Math.floor(Math.random()*10);
-      if(chance === 9) {
-        discordMessageObj.channel.send("swag out", {
-          files: [
-            getRandomFile(departureImageFiles)
-          ]
-        });
-      }
       
-      mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
-      discordVoiceChannel.leave();
+      setTimeout(() => {
+        if (soundQueue.length === 0) {
+          let chance = Math.floor(Math.random()*10);
+          if(chance === 9) {
+            discordMessageObj.channel.send("swag out", {
+              files: [
+                getRandomFile(departureImageFiles)
+              ]
+            });
+          }
+          
+          mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
+          discordVoiceChannel.leave();
+          //reset vars so that the bot is happy
+          discordVoiceChannel = null;
+          discordMessageObj = null;
+          discordConnectionObj = null; 
+        }
+      }, 1500);
     }
   };
 

@@ -37,7 +37,7 @@ mediator.on('discord.ready', (discord) => {
   client.connect(mediator, discord)
     .then(clientRepo => {
       
-      messageBlaster.connect(mediator, discord)
+      messageBlaster.connect(mediator, discord, {giphySettings: config.giphySettings})
         .then(messageRepo => {
           logger.info("MessageBlaster has connected.");
           

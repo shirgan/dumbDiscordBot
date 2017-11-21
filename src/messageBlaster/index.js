@@ -30,7 +30,7 @@ const Subject = (mediator) => {
   };
 };
 
-const messageController = (mediator, discordClient) => {
+const messageController = (mediator, discordClient, addlOptions) => {
   
   var subject = new Subject(mediator);
   
@@ -38,7 +38,7 @@ const messageController = (mediator, discordClient) => {
     discordClient.on('message', message => {
       
       if (message.content === "!help") {
-        message.channel.send({embed: {
+        message.reply({embed: {
             color: 3447003,
             title: "Project Wiki Help Page Thinger",
             url: "https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page",
@@ -59,6 +59,9 @@ const messageController = (mediator, discordClient) => {
             }
           }
         });
+      } else if (message.content === '!giphy' || message.content === '!gif') {
+        message.channel.send("How am I doing?", {
+        });
       } else {
         subject.notifyAllObservers(message);
       }
@@ -73,12 +76,12 @@ const messageController = (mediator, discordClient) => {
   });
 };
 
-const connect = (mediator, connection) => {
+const connect = (mediator, connection, addlOptions) => {
   return new Promise((resolve, reject) => {
     if(!connection) {
       reject(new Error('No discord object supplied!'));
     }
-    resolve(messageController(mediator, connection));
+    resolve(messageController(mediator, connection, addlOptions));
   });
 }
 
