@@ -11,8 +11,9 @@ const start = (options) => {
     }
     
     //options.locateRepo.getMailAndParse(options);
-    options.soundRepo.soundTriggerListener();
-    options.soundRepo.soundProcessor();
+    options.messageRepo.messageRouter(options);
+    options.imageRepo.imageProcessor(options);
+    options.soundRepo.soundProcessor(options);
     options.soundRepo.soundHalter();
     options.clientRepo.setClientSettings();
     
