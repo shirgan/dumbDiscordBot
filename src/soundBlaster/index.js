@@ -40,6 +40,7 @@ const soundController = (mediator, discordClient) => {
   let rimshotFile = path.join(__dirname, '../assets/sounds/rimshot/rim.mp3');
   let city14Path = path.join(__dirname, '../assets/sounds/city14')
   let h3h3Path = path.join(__dirname, '../assets/sounds/h3h3')
+  let alexJonesPath = path.join(__dirname, '../assets/sounds/aj')
 
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
@@ -53,6 +54,7 @@ const soundController = (mediator, discordClient) => {
   let city14SoundFiles = generateSoundFileList(city14Path);
   let h3h3SoundFiles = generateSoundFileList(h3h3Path);
   let departureImageFiles = generateImageFileList(departureImagesPath);
+  let alexJonesSoundFiles = generateImageFileList(alexJonesPath);
 
   
   const Observer = function() {
@@ -106,6 +108,10 @@ const soundController = (mediator, discordClient) => {
         } else if (message.content === '!h3h3') {
           joinVoiceChannel(message).then(() => {
             addToQueue(getRandomFile(h3h3SoundFiles));
+          });
+        } else if (message.content === '!aj') {
+          joinVoiceChannel(message).then(() => {
+            addToQueue(getRandomFile(alexJonesSoundFiles));
           });
         }
         
