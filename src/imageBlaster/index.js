@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
+import https from 'https';
 
 const generateImageFileList = (dir) => {
   return fs.readdirSync(dir)
@@ -10,7 +11,7 @@ const generateImageFileList = (dir) => {
   });
 };
 
-const messageController = (mediator, discordClient) => {
+const messageController = (mediator, discordClient, addlOptions) => {
   
   let departureImagesPath = path.join(__dirname, '../assets/images');
   let departureImageFiles = generateImageFileList(departureImagesPath);
@@ -35,6 +36,73 @@ const messageController = (mediator, discordClient) => {
               getRandomFile(departureImageFiles)
             ]
           });
+        } else if (message.content === '!giphy' || message.content === '!gif') {
+          
+          if(addlOptions.giphyApiKey) {
+            let data = '';
+            let options = {
+              host: 'api.giphy.com',
+              path: '/v1/gifs/random?api_key='+addlOptions.giphyApiKey,
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data)
+              }
+            }
+            makeHttpRequest(options, data, (statusCode, result) => {
+              console.log("making img call");
+              if (statusCode != 200) {
+                message.channel.send("😢 I couldn't complete the request. " + statusCode);
+              } else {
+                if(result.data.image_url) {
+                  message.channel.send("How'd I do?", {
+                    "embed": {
+                      "image": {
+                      "url": result.data.image_url,
+                      }
+                    }
+                  });
+                } else {
+                  message.channel.send("😟 I found nothing.")
+                }
+              }
+            });
+          }
+        } else if (message.content != null) {
+          /*if(addlOptions.giphyApiKey) {
+            let chance = Math.floor(Math.random()*2);
+            if(chance === 1) {  // 50%
+              let str_arr = message.content.split(' ');
+              
+              let word = str_arr[Math.floor(str_arr.length/2)];
+              let data = '';
+              let options = {
+                host: 'api.giphy.com',
+                path: '/v1/gifs/random?api_key='+addlOptions.giphyApiKey+'&tag='+word,
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Content-Length': Buffer.byteLength(data)
+                }
+              }
+              makeHttpRequest(options, data, (statusCode, result) => {
+                if (statusCode != 200) {
+                  message.channel.send("😢 I couldn't complete the request. " + statusCode);
+                } else {
+                  mediator.emit('generic.log',result);
+                  if(result.data.image_url) {
+                    message.channel.send({
+                      "embed": {
+                        "image": {
+                        "url": result.data.image_url,
+                        }
+                      }
+                    });
+                  }
+                }
+              });
+            }
+          }*/
         }
       }
     };
@@ -45,13 +113,44 @@ const messageController = (mediator, discordClient) => {
   });
 };
 
-const connect = (mediator, connection) => {
+const connect = (mediator, connection, config) => {
+  let addlOptions = {};
+  if(config.giphySettings && config.giphySettings.apiKey) {
+    addlOptions.giphyApiKey = config.giphySettings.apiKey;
+  }
+  
   return new Promise((resolve, reject) => {
     if(!connection) {
       reject(new Error('No discord object supplied!'));
     }
-    resolve(messageController(mediator, connection));
+    resolve(messageController(mediator, connection, addlOptions));
   });
 }
+
+const makeHttpRequest = (options, payload, callback) => {
+  options.port = 443;
+  let request = https.request(options, (result) => {
+    let output = '';
+    result.setEncoding('utf8');
+    
+    // Listener to receive data
+    result.on('data', (chunk) => {
+        output += chunk
+    });
+
+    // Listener for intializing callback after receiving complete response
+    result.on('end', () => {
+        let obj = JSON.parse(output)
+        callback(result.statusCode, obj)
+    });
+  });
+  
+  request.on('error', (err) => {
+    // put error handling here
+  });
+  
+  request.write(payload);
+  request.end();
+};
 
 export {connect};
