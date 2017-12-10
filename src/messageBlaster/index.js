@@ -30,7 +30,7 @@ const Subject = (mediator) => {
   };
 };
 
-const messageController = (mediator, discordClient, addlOptions) => {
+const messageController = (mediator, discordClient) => {
   
   var subject = new Subject(mediator);
   
@@ -59,9 +59,10 @@ const messageController = (mediator, discordClient, addlOptions) => {
             }
           }
         });
-      } else if (message.content === '!giphy' || message.content === '!gif') {
-        message.channel.send("How am I doing?", {
-        });
+      } else if (message.content === '!join' || message.content === '!listen') {
+        //options.voiceRepo.joinChannel(message);
+      } else if (message.content === '!leave' || message.content === '!go away') {
+        options.voiceRepo.leaveChannel(message);
       } else {
         subject.notifyAllObservers(message);
       }
@@ -76,15 +77,13 @@ const messageController = (mediator, discordClient, addlOptions) => {
   });
 };
 
-const connect = (mediator, connection, addlOptions) => {
+const connect = (mediator, connection) => {
   return new Promise((resolve, reject) => {
     if(!connection) {
       reject(new Error('No discord object supplied!'));
     }
-    resolve(messageController(mediator, connection, addlOptions));
+    resolve(messageController(mediator, connection));
   });
 }
-
-
 
 export {connect};

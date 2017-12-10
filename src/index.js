@@ -5,6 +5,7 @@ import * as config from './config/';
 import * as soundBlaster from './soundBlaster/index';
 import * as messageBlaster from './messageBlaster/index';
 import * as imageBlaster from './imageBlaster/index';
+import * as voiceListener from './voiceListener';
 import * as client from './client/index';
 import * as server from './server/server';
 
@@ -37,32 +38,36 @@ mediator.on('discord.ready', (discord) => {
   client.connect(mediator, discord)
     .then(clientRepo => {
       
-      messageBlaster.connect(mediator, discord, {giphySettings: config.giphySettings})
+      messageBlaster.connect(mediator, discord)
         .then(messageRepo => {
           logger.info("MessageBlaster has connected.");
           
-          imageBlaster.connect(mediator, discord) 
+          imageBlaster.connect(mediator, discord, config) 
             .then(imageRepo => {
               logger.info ("ImageBlaster has connected.");
                 
-            soundBlaster.connect(mediator, discord)
-              .then(soundRepo => {
-                logger.info("SoundBlaster has connected.");
-                
-                return server.start({
-                  messageRepo,
-                  imageRepo,
-                  soundRepo,
-                  clientRepo
+              soundBlaster.connect(mediator, discord)
+                .then(soundRepo => {
+                  logger.info("SoundBlaster has connected.");
+                  
+                  voiceListener.connect(mediator, discord) 
+                    .then(voiceRepo => {
+                      logger.info ("VoiceListener has connected.");
+                  
+                    return server.start({
+                      messageRepo,
+                      imageRepo,
+                      soundRepo,
+                      clientRepo,
+                      voiceRepo
+                    });
+                  }).then(app => {
+                    logger.info("Dumb Discord Bot Service started successfully.");
+                  });
+                  
                 });
-              });
-              
-            })
-        })
-        .then(app => {
-          logger.info("Dumb Discord Bot Service started successfully.");
+            });
         });
-
     });
 });
 

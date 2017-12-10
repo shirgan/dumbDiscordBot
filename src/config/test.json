@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "seraphic-ripsaw-185803",
+  "private_key_id": "8abafb0578d7420acee724736d68975325a1b313",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCr8An9cwiLkrl1\nm0hCtQnvEoOxBLnCCFM0d1Ij13Eu+zuE3kPrU1ZdFASD49cdM83LVY2oO0L3O1pm\nnMaAG4JJMejSMli47/z1JpNjf9oqaovCWRtSi+/WlNrWZzvSTJzqGAi4nRDSMGh1\n2A0EfHu++b5+2V6Qyjq6HH44p8WDq6ubeQbTxWsgyPsZc2wz48+sizJF0DTtsgBJ\n83bI6nIIY1Sclfv2FBb+gRt2IF3GMX5spXduetgI650zhPICy+W4PaEtgh9SH2qK\n5f6vWhDZ3SzsA13cwBxdOcJ5KC4fL0x2HP9tFxlQm0s44kzo9BywEhb0RGEaBYPU\nySoL4Sc5AgMBAAECggEACpxfOXV6bwaojGH/ZSKAEPF/EBMfFaLm46ODfbPDh+c4\nRpxi66hyeX8NQkhy05oJVsWaXun9WX2fuBpvw6Mu+K5sVGCICi3BWi29xdOzlo+J\nvX47Se5Z6E+6a6XmUrWor2e5Tg9fZOFY6QDi2MaH6oLGJ1Tp2ZypYCf3AC8WaOg6\nue92UU0SPXnhSk3SSFnvOj6E+UZlpwkBjP7EuBIEK70El1kL8wTRefx/IByenJIL\nd0gL+PKv8XNsy1+HLajeVcyjgOYwr1MfvdmEKe0TU6cCkCxIhWGZdpTJg0a0Nkam\n3Oy7PWBh9gzffgB6HrmcL0t3Xvs4nCZAnKTyH4dHIwKBgQDqk1GgCs0saiD+ynUT\nIFJURGOIqJUg9o2QYO6dNZ3NqdcXhHrQZN/FcQm2X68/eeIOpo/R8QpxWfH0OPcx\nP2oaToRGjPMP4YU5eXJOhe7lrVsKy7eQBBpHaKVJ5kBq67i5y7Gt3WykHTK/RPi8\ni6/Die8jSF3I1gyKVjzS1IgNCwKBgQC7pCqM31oQ6nzlWih/XAc9LP1Frt3pPrhK\ncGN2r5Pl3Ukn5gfIaP6cwqsRoBAqqQ95T4/zF00Ww4XoeitbOY1n3qIS2OlYtC7G\nQhQUNFqJmMlDoTUx+Em/CyklnuLbmlPYqoIYPW/TEqGzPFs8S29EvflC04SjgjuT\nsIRA5/MfSwKBgQCe0BKJOgbitQ+VsNhGlLFon8yLbydX49TAFQA3q18lKIGZSHYl\ntMXTVM5wjKOHZCtqI9ZnGrwpNe4bnJ2u1/Ir0VC4uyCsddDOsqxzATZWhWGIE5g5\nhq2L/ws41wxx1xl/oKqwvaKaEbKT0Exeymu7BR3EU3A7Ur+2wN/5FS7vNQKBgDWT\nMfL28qhRy0dQ7q8uf4KgDdCPlRy7o7LdVAjXKMtA21pg+2flUo0/p8hogzUrABgK\n93bY+FG/kcRG3Yo2bIFzt6LZ/AYvrAs/YqxCJneTACQnKyERWz0I2r67FtrMvZPn\nWy3AnOUPNMwQN5yHjUV7WGgULJLi5E/O3nQJxgjxAoGBAIQsGwqQUVk0j5CZ/eNA\nPro+nBj+jJSJBhRnLxPPHkC5C2Rz0JWGCQdr+zkhGRSkFGgoB0Cg5zOWAV5bDh/d\nuDRMaJKwSvH8Cfs7qsaU+ftZXYZTx3IaVNjZLgbhYSrdYiumZEr8EFvkYYsn00Uz\nJJVPInm5QaLPHqMrCi3VPYKb\n-----END PRIVATE KEY-----\n",
+  "client_email": "dumbdiscordbot@seraphic-ripsaw-185803.iam.gserviceaccount.com",
+  "client_id": "111222415285229434687",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dumbdiscordbot%40seraphic-ripsaw-185803.iam.gserviceaccount.com"
+}

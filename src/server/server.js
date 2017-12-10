@@ -16,6 +16,7 @@ const start = (options) => {
     options.soundRepo.soundProcessor(options);
     options.soundRepo.soundHalter();
     options.clientRepo.setClientSettings();
+    options.voiceRepo.startVoiceListenAgent();
     
     /*if (!options.port) {
       reject(new Error('The server must be started with an available port'));
