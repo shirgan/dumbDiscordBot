@@ -68,7 +68,7 @@ To set up a dev environment:
 ### Building and Running the Bot
 1) make sure you have run the setup commands from the section above^
 2) ```gulp build:backend```
-3) ```gulp serve:backend --token="yourTokenKeyHereBruh"
+3) ```gulp serve:backend``` --token="yourTokenKeyHereBruh"
 
 ### Prod deployment
 Note: This bot is still in development, so as of right now it is recommended that the bot run from the dist folder, allowing for easy updating to new releases. However, if you feel that you must run in a folder not managed by the gulpfile or git branch, make sure you perform the following commands
