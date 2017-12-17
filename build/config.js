@@ -34,9 +34,9 @@ export default {
       //'src/**/templates/**/.*'
     ],
     destDir: "dist",
-    targetDir: "target"
-  },
-  test: {
-    
+    targetDir: "target",
+    test: [
+      'src/**/*.spec.js'
+    ]
   }
 };

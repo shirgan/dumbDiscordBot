@@ -38,9 +38,16 @@
     "gulp-compile": "^1.0.0",
     "gulp-eslint": "^4.0.0",
     "gulp-if": "^2.0.2",
+    "gulp-istanbul": "^1.1.2",
+    "gulp-jasmine": "^2.4.2",
     "gulp-load-plugins": "^1.5.0",
     "gulp-load-tasks": "^0.8.4",
+    "istanbul": "^0.4.5",
     "jasmine": "^2.8.0",
+    "jasmine-core": "^2.8.0",
+    "karma": "^1.7.1",
+    "karma-cli": "^1.0.1",
+    "karma-jasmine": "^1.1.1",
     "load-gulp-tasks": "^0.1.0"
   }
 }

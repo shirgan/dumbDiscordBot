@@ -31,13 +31,10 @@ let plugins = {
 //let loadedGulpTasks = loadGulpTasks('build/tasks', gulp, options, plugins);
 require ('load-gulp-tasks')(gulp, options, plugins);
 
-
 // build task
 gulp.task('build:backend', () => runSequential(['clean', 'copy:backend', 'babel:backend']));
 
 gulp.task('compile', () => runSequential(['clean', 'copy:backendCompile', 'copy:backend', 'babel:backendCompile']));
-
-
 
 // Default task
 gulp.task('default', function() {
