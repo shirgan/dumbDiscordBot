@@ -4,6 +4,7 @@
 
 // Required
 var gulp = require('gulp');
+var fs = require('fs');
 
 const gulpLoadPlugins = require('gulp-load-plugins');
 //const $ = gulpLoadPlugins();  //gulp-load-plugins will attempt to include all gulp related plugins fro node_modules
@@ -25,7 +26,8 @@ let options = {
 
 let plugins = {
   gulpPlugins: gulpLoadPlugins(),
-  pm2: pm2
+  pm2: pm2,
+  fs: fs
 }
 
 //let loadedGulpTasks = loadGulpTasks('build/tasks', gulp, options, plugins);
