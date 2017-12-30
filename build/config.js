@@ -4,6 +4,7 @@ export default {
   config: {
     src: [
       'src/**/*.js',
+      '!src/**/*.spec.js',
       '!src/**/{fixtures,templates}/**'
     ],
     backEndsrc: [

@@ -1,6 +1,1 @@
 'use strict';
-
-describe('boot', () => {
-
-
-});
