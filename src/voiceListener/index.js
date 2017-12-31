@@ -1,5 +1,4 @@
 'use strict';
-import googleSpeech from '@google-cloud/speech';
 import fs from 'fs';
 
 const voiceListnerController = (mediator, discordClient) => {
@@ -21,7 +20,7 @@ const voiceListnerController = (mediator, discordClient) => {
           //discordMessageObj = message;
           currentVoiceChannel = message.member.voiceChannel;
           
-          mediator.emit('generic.log', 'Joined voice channel to listen: '+ currentVoiceChannel.name);
+          mediator.emit('generic.log', currentVoiceChannel.name);
           
           connection.on('speaking', (user, speaking) => {
             if(speaking) {
