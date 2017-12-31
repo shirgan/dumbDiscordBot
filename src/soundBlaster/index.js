@@ -26,7 +26,26 @@ const soundController = (mediator, discordClient) => {
   };
   
   let getRandomFile = (items) => {
-    return items[Math.floor(Math.random()*items.length)];
+    return items[Math.floor(Math.random() * items.length)];
+  };
+  
+  const shuffle = (array) => {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
   };
   
   // sounds
@@ -40,19 +59,64 @@ const soundController = (mediator, discordClient) => {
   let rimshotFile = path.join(__dirname, '../assets/sounds/rimshot/rim.mp3');
   let city14Path = path.join(__dirname, '../assets/sounds/city14')
   let h3h3Path = path.join(__dirname, '../assets/sounds/h3h3')
+  let alexJonesPath = path.join(__dirname, '../assets/sounds/aj')
 
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
-  
-  let randoSoundFiles = generateSoundFileList(randoFilePath);
-  let hoorsSoundFiles = generateSoundFileList(hoorsFilePath);
-  let dootSoundFiles = generateSoundFileList(dootFilePath);
-  let beepSoundFiles = generateSoundFileList(beepFilePath);
-  let lolSoundFiles = generateSoundFileList(lolFilePath);
-  let gotemSoundFiles = generateSoundFileList(gotemPath);
-  let city14SoundFiles = generateSoundFileList(city14Path);
-  let h3h3SoundFiles = generateSoundFileList(h3h3Path);
   let departureImageFiles = generateImageFileList(departureImagesPath);
+  
+  let soundFilesObj = {
+    rando: {
+      files: generateSoundFileList(randoFilePath),
+      curIndex: 0
+    },
+    hoors: {
+      files: generateSoundFileList(hoorsFilePath),
+      curIndex: 0
+    },
+    doot: {
+      files: generateSoundFileList(dootFilePath),
+      curIndex: 0
+    },
+    beep: {
+      files: generateSoundFileList(beepFilePath),
+      curIndex: 0
+    },
+    lol: {
+      files: generateSoundFileList(lolFilePath),
+      curIndex: 0
+    },
+    gotem: {
+      files: generateSoundFileList(gotemPath),
+      curIndex: 0
+    },
+    city14: {
+      files: generateSoundFileList(city14Path),
+      curIndex: 0
+    },
+    h3h3: {
+      files: generateSoundFileList(h3h3Path),
+      curIndex: 0
+    },
+    alexJones: {
+      files: generateSoundFileList(alexJonesPath),
+      curIndex: 0
+    }
+  };
+  
+  for (var key in soundFilesObj) {
+    soundFilesObj[key].files = shuffle(soundFilesObj[key].files);
+  }
+  
+  const prepSoundFile = (obj) => {
+    if(obj.curIndex === obj.files.length){
+      obj.curIndex = 0;
+      obj.files = shuffle(obj.files);
+    }
+    
+    addToQueue(obj.files[obj.curIndex]);
+    obj.curIndex++;
+  };
 
   
   const Observer = function() {
@@ -61,19 +125,19 @@ const soundController = (mediator, discordClient) => {
         
         if (message.content === '!rando') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(getRandomFile(randoSoundFiles));
+            prepSoundFile(soundFilesObj.rando);
           });
         } else if (message.content === '!hoors' || message.content === '!hoor') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(getRandomFile(hoorsSoundFiles));
+            prepSoundFile(soundFilesObj.hoors);
           });
         } else if (message.content === '!doot') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(getRandomFile(dootSoundFiles));
+            prepSoundFile(soundFilesObj.doot);
           });
         } else if (message.content === '!beep') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(getRandomFile(beepSoundFiles));
+            prepSoundFile(soundFilesObj.beep);
           });
         } else if (message.content === '!duke') {
           joinVoiceChannel(message).then(() => {
@@ -85,11 +149,11 @@ const soundController = (mediator, discordClient) => {
           });
         } else if (message.content === '!lol' || message.content === 'lol' || message.content === 'lel' || message.content === 'lul') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(lolSoundFiles);
+            prepSoundFile(soundFilesObj.lol);
           });
         } else if (message.content === 'gotem') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(getRandomFile(gotemSoundFiles));
+            prepSoundFile(soundFilesObj.gotem);
           });
         } else if (message.content === 'no' || message.content === 'noo' || message.content === 'nooo') {
           joinVoiceChannel(message).then(() => {
@@ -97,7 +161,7 @@ const soundController = (mediator, discordClient) => {
           });
         } else if (message.content === '!city14') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(getRandomFile(city14SoundFiles));
+            prepSoundFile(soundFilesObj.city14);
           });
         } else if (message.content === '!dab') {
           joinVoiceChannel(message).then(() => {
@@ -105,7 +169,11 @@ const soundController = (mediator, discordClient) => {
           });
         } else if (message.content === '!h3h3') {
           joinVoiceChannel(message).then(() => {
-            addToQueue(getRandomFile(h3h3SoundFiles));
+            prepSoundFile(soundFilesObj.h3h3);
+          });
+        } else if (message.content === '!aj') {
+          joinVoiceChannel(message).then(() => {
+            prepSoundFile(soundFilesObj.alexJones);
           });
         }
         
@@ -135,21 +203,23 @@ const soundController = (mediator, discordClient) => {
   const joinVoiceChannel = (message) => {
     return new Promise((resolve, reject) => {
       if (message.member.voiceChannel) {
-        message.member.voiceChannel.join()
-        .then(connection => { // Connection is an instance of VoiceConnection
-          discordMessageObj = message;
-          discordVoiceChannel = message.member.voiceChannel;
-          discordConnectionObj = connection;
-          
-          mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
-          
+        if (message.member.voiceChannel !== discordVoiceChannel) {
+          message.member.voiceChannel.join()
+          .then(connection => { // Connection is an instance of VoiceConnection
+            discordMessageObj = message;
+            discordVoiceChannel = message.member.voiceChannel;
+            discordConnectionObj = connection;
+            
+            mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
+            
+            resolve();
+          });
+        } else {
           resolve();
-        })
-        .catch(console.log);
+        }
         
       } else {
         message.reply('Dude, you need to be in a voice channel to hear me!');
-        reject();
       }
     });
   };
@@ -179,17 +249,26 @@ const soundController = (mediator, discordClient) => {
     if (soundQueue.length != 0 ){
       mediator.emit('soundBlaster:newSound', 0);
     } else {
-      let chance = Math.floor(Math.random()*10);
-      if(chance === 9) {
-        discordMessageObj.channel.send("swag out", {
-          files: [
-            getRandomFile(departureImageFiles)
-          ]
-        });
-      }
       
-      mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
-      discordVoiceChannel.leave();
+      setTimeout(() => {
+        if (soundQueue.length === 0) {
+          let chance = Math.floor(Math.random()*10);
+          if(chance === 9) {
+            discordMessageObj.channel.send("swag out", {
+              files: [
+                getRandomFile(departureImageFiles)
+              ]
+            });
+          }
+          
+          mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
+          discordVoiceChannel.leave();
+          //reset vars so that the bot is happy
+          discordVoiceChannel = null;
+          discordMessageObj = null;
+          discordConnectionObj = null; 
+        }
+      }, 1500);
     }
   };
 

@@ -38,7 +38,7 @@ const messageController = (mediator, discordClient) => {
     discordClient.on('message', message => {
       
       if (message.content === "!help") {
-        message.channel.send({embed: {
+        message.reply({embed: {
             color: 3447003,
             title: "Project Wiki Help Page Thinger",
             url: "https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page",
@@ -59,6 +59,10 @@ const messageController = (mediator, discordClient) => {
             }
           }
         });
+      } else if (message.content === '!join' || message.content === '!listen') {
+        //options.voiceRepo.joinChannel(message);
+      } else if (message.content === '!leave' || message.content === '!go away') {
+        options.voiceRepo.leaveChannel(message);
       } else {
         subject.notifyAllObservers(message);
       }
@@ -81,7 +85,5 @@ const connect = (mediator, connection) => {
     resolve(messageController(mediator, connection));
   });
 }
-
-
 
 export {connect};

@@ -4,8 +4,10 @@
 
 // Required
 var gulp = require('gulp');
+var fs = require('fs');
 
 const gulpLoadPlugins = require('gulp-load-plugins');
+const isparta = require('isparta');
 //const $ = gulpLoadPlugins();  //gulp-load-plugins will attempt to include all gulp related plugins fro node_modules
 
 
@@ -25,19 +27,17 @@ let options = {
 
 let plugins = {
   gulpPlugins: gulpLoadPlugins(),
-  pm2: pm2
+  pm2: pm2,
+  fs: fs,
+  isparta: isparta
 }
 
 //let loadedGulpTasks = loadGulpTasks('build/tasks', gulp, options, plugins);
 require ('load-gulp-tasks')(gulp, options, plugins);
 
-
 // build task
 gulp.task('build:backend', () => runSequential(['clean', 'copy:backend', 'babel:backend']));
-
 gulp.task('compile', () => runSequential(['clean', 'copy:backendCompile', 'copy:backend', 'babel:backendCompile']));
-
-
 
 // Default task
 gulp.task('default', function() {

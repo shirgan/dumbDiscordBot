@@ -2,6 +2,5 @@
   "name"        : "Dumb Discord Bot",
   "script"      : "backend/index.js",
   "instances"   : "1",
-  "node-args"   : "",
-  "cwd"         : "./dist",
+  "cwd"         : "./dist"
 }]

@@ -4,6 +4,7 @@ export default {
   config: {
     src: [
       'src/**/*.js',
+      '!src/**/*.spec.js',
       '!src/**/{fixtures,templates}/**'
     ],
     backEndsrc: [
@@ -34,9 +35,9 @@ export default {
       //'src/**/templates/**/.*'
     ],
     destDir: "dist",
-    targetDir: "target"
-  },
-  test: {
-    
+    targetDir: "target",
+    test: [
+      'src/**/*.spec.js'
+    ]
   }
 };

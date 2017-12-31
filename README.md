@@ -65,11 +65,29 @@ To set up a dev environment:
     2a. If using a windows machine execute ```npm install --global --production windows-build-tools```
 3. Execute ```npm install```
 
-The following gulp commands
-* ```gulp clean```
-* ```gulp copy```
-* ```gulp build:backend```
-* ```gulp serve:backend```
+### Building and Running the Bot
+1) make sure you have run the setup commands from the section above^
+2) ```gulp build:backend```
+3) ```gulp serve:backend --token="yourTokenKeyHereBruh"```
+Note: If you remove the token argument, you must specify the token in the config file
+
+### Prod deployment
+Note: This bot is still in development, so as of right now it is recommended that the bot run from the dist folder, allowing for easy updating to new releases. However, if you feel that you must run in a folder not managed by the gulpfile or git branch, make sure you perform the following commands
+
+1) make sure you have run the setup commands from the section above^
+2) ```gulp build:backend```
+3) copy the dist contents to your new location
+4) edit the ```config/config.js``` to include your clientId token. Likewise if you define it as a process env var you don't need to do this
+5) Actaully don't do this, since there is currently no expand/compile task written for adding node modules and package.json is missing. 
+
+### Gulp Command Reference
+The following gulp command reference
+* ```gulp clean``` - Cleans out dist folder
+* ```gulp copy:backend``` - Copies over backend files
+* ```gulp build:backend``` - Builds the project (clean, copy, babel)
+* ```gulp serve:backend``` - Uses PM2 to launch and manage the process
+* ```gulp babel:backend``` - I'll let you guess this one
+* ```gulp lint``` - Still not fully ready
 
 # Exception handling
 All exceptions will be handled within the main thread of the application. Mediator broadcasts of unhandled or unexpected exceptions will be handeled the same, unless specific module requirements specify otherwise. All exceptions will be logged using the applications logger. 
