@@ -18,14 +18,7 @@ module.exports = function(gulp, options, plugins) {
         dir: options.config.destDir + '/coverage'
       }))
       //.pipe(plugins.gulpPlugins.istanbul.enforceThresholds({ thresholds: { global: 90 } }))
-      .once('end', function () {
-          process.kill(process.pid, 'SIGINT');
-          setTimeout(function() {
-              /* eslint-disable */
-              process.exit(0);
-              /* eslint-enable */
-          }, 100);
-      });
+      .pipe(plugins.gulpPlugins.exit());
   });
   
   gulp.task('test', () => {
