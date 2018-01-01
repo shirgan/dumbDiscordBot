@@ -46,6 +46,7 @@
     "istanbul": "^0.4.5",
     "jasmine": "^2.8.0",
     "jasmine-core": "^2.8.0",
+    "jasmine-reporters": "^2.3.0",
     "load-gulp-tasks": "^0.1.0"
   }
 }
