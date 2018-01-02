@@ -88,14 +88,17 @@ const voiceListnerController = (mediator, discordClient) => {
       let counter = 0;
       let reportPromise = new Promise((resolve, reject) => {
         for (var i in speakLog.voiceChannels[currentVoiceChannel.id].users) {
-          console.log(speakLog.voiceChannels[currentVoiceChannel.id].users[i]);
+
           let clientName = discordClient.fetchUser(i);
           clientName.then( (userAccount) => {
-            let tempIdx = i;
+            console.log('user: '+userAccount.username);
+            // let tempIdx = i;
             let userLog = speakLog.voiceChannels[currentVoiceChannel.id].users[i].log;
+            console.log(userLog);
             let time = 0;
             for (let j=0; j<userLog.length; j++) {
               for (var k in userLog[j]) {
+                console.log(userLog[j][k]);
                time += userLog[j][k];
               }
             }
