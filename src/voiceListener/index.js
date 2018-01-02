@@ -88,17 +88,13 @@ const voiceListnerController = (mediator, discordClient) => {
       let counter = 0;
       let reportPromise = new Promise((resolve, reject) => {
         for (var i in speakLog.voiceChannels[currentVoiceChannel.id].users) {
-
+          let userLog = speakLog.voiceChannels[currentVoiceChannel.id].users[i].log;
           let clientName = discordClient.fetchUser(i);
           clientName.then( (userAccount) => {
-            console.log('user: '+userAccount.username);
-            // let tempIdx = i;
-            let userLog = speakLog.voiceChannels[currentVoiceChannel.id].users[i].log;
-            console.log(userLog);
             let time = 0;
             for (let j=0; j<userLog.length; j++) {
               for (var k in userLog[j]) {
-                console.log(userLog[j][k]);
+
                time += userLog[j][k];
               }
             }
@@ -110,15 +106,13 @@ const voiceListnerController = (mediator, discordClient) => {
             }
             
           });
-          //sortable.push({[i]: speakLog.voiceChannels[currentVoiceChannel.id].users[i]});
         }
       }).then( () => {
         sortable.sort(function(a, b) {
             return a[1] - b[1];
         });
-        console.log(sortable);
+        
         for(let i in sortable.reverse()) {
-          //console.log(i);
 
           messageStr += sortable[i][0]+": "+ sortable[i][1]/1000/60 + " minutes\r";
           
