@@ -8,6 +8,7 @@ var fs = require('fs');
 
 const gulpLoadPlugins = require('gulp-load-plugins');
 const isparta = require('isparta');
+const reporter = require('jasmine-reporters');
 //const $ = gulpLoadPlugins();  //gulp-load-plugins will attempt to include all gulp related plugins fro node_modules
 
 
@@ -29,7 +30,8 @@ let plugins = {
   gulpPlugins: gulpLoadPlugins(),
   pm2: pm2,
   fs: fs,
-  isparta: isparta
+  isparta: isparta,
+  reporter: reporter
 }
 
 //let loadedGulpTasks = loadGulpTasks('build/tasks', gulp, options, plugins);
