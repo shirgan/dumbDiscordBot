@@ -204,7 +204,7 @@ const soundController = (mediator, discordClient) => {
       });
       
       dispatcher.on('end', () => {
-        playNextSoundInQueue()
+        playNextSoundInQueue(options)
       });
     });
   }
@@ -252,7 +252,7 @@ const soundController = (mediator, discordClient) => {
     });
   };
   
-  const playNextSoundInQueue = () => {
+  const playNextSoundInQueue = (options) => {
     soundQueue.splice(0, 1);    // remove the first element and re-shuffle
     
     if (soundQueue.length != 0 ){
@@ -269,12 +269,13 @@ const soundController = (mediator, discordClient) => {
               ]
             });
           }
-          
-          mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
-          discordVoiceChannel.leave();
-          //reset vars so that the bot is happy
-          discordVoiceChannel = null;
+          if(options.global.stickyVoiceChannel === false) {
+            mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
+            discordVoiceChannel.leave();
+            //reset vars so that the bot is happy
+          }
           discordMessageObj = null;
+          discordVoiceChannel = null;
           discordConnectionObj = null; 
         }
       }, 1500);

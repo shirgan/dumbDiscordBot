@@ -61,9 +61,12 @@ const messageController = (mediator, discordClient) => {
             }
           });
         } else if (message.content === '!join' || message.content === '!listen') {
-          //options.voiceRepo.joinChannel(message);
+          options.voiceRepo.joinChannel(message);
         } else if (message.content === '!leave' || message.content === '!go away') {
+          mediator.emit('soundBlaster:halt');
           options.voiceRepo.leaveChannel(message);
+        } else if (message.content === '!speechreport') {
+          options.voiceRepo.speechReport(message);
         } else {
           subject.notifyAllObservers(message);
         }
@@ -106,7 +109,6 @@ const messageController = (mediator, discordClient) => {
           message.reply({embed: {
               color: 3447003,
               title: "Top Words!",
-              url: "https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page",
               description: "Here are the top 10 words:\r"+messageStr,
               timestamp: new Date(),
               footer: {

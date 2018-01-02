@@ -11,12 +11,13 @@ const start = (options) => {
     }
     
     //options.locateRepo.getMailAndParse(options);
+    options.global = {stickyVoiceChannel: false};
     options.messageRepo.messageRouter(options);
     options.imageRepo.imageProcessor(options);
     options.soundRepo.soundProcessor(options);
     options.soundRepo.soundHalter();
     options.clientRepo.setClientSettings();
-    options.voiceRepo.startVoiceListenAgent();
+    options.voiceRepo.startVoiceListenAgent(options);
     
     /*if (!options.port) {
       reject(new Error('The server must be started with an available port'));
