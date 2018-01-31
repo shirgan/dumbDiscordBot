@@ -37,6 +37,9 @@ const messageController = (mediator, discordClient) => {
   
   const messageRouter = (options) => {
     discordClient.on('message', message => {
+      // this probably isn't the best way to go about this, but just convert everything to lower case
+      message.content = message.content.toLowerCase();
+
       if(!message.author.bot){
         if (message.content === "!help") {
           message.reply({embed: {
