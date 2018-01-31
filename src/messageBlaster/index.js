@@ -67,6 +67,8 @@ const messageController = (mediator, discordClient) => {
           options.voiceRepo.leaveChannel(message);
         } else if (message.content === '!speechreport') {
           options.voiceRepo.speechReport(message);
+        } else if (message.content.indexOf('!replay', 0) > 0) {
+          options.voiceRepo.replay(message);
         } else {
           subject.notifyAllObservers(message);
         }
