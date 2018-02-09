@@ -61,6 +61,7 @@ const soundController = (mediator, discordClient) => {
   let h3h3Path = path.join(__dirname, '../assets/sounds/h3h3');
   let alexJonesPath = path.join(__dirname, '../assets/sounds/aj');
   let billWurtz = path.join(__dirname, '../assets/sounds/bw');
+  let lookAtThisDudePath = path.join(__dirname, '../assets/sounds/lotd');
 
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
@@ -105,6 +106,10 @@ const soundController = (mediator, discordClient) => {
     },
     billWurtz: {
       files: generateSoundFileList(billWurtz),
+      curIndex: 0
+    },
+    lookAtThisDude: {
+      files: generateSoundFileList(lookAtThisDudePath),
       curIndex: 0
     }
   };
@@ -184,8 +189,12 @@ const soundController = (mediator, discordClient) => {
           joinVoiceChannel(message).then(() => {
             prepSoundFile(soundFilesObj.billWurtz);
           });
+        } else if (message.content === '!lookatthisdude' || message.content === '!lotd') {
+          joinVoiceChannel(message).then(() => {
+            prepSoundFile(soundFilesObj.lookAtThisDude);
+          });
         }
-        
+
       }
     }
   }
