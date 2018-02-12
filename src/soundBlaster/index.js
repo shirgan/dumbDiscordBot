@@ -112,6 +112,7 @@ const soundController = (mediator, discordClient) => {
     lookAtThisDude: {
       files: generateSoundFileList(lookAtThisDudePath),
       curIndex: 0
+    },
     earRape: {
       files: generateSoundFileList(earRape),
       curIndex: 0
