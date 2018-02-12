@@ -37,6 +37,9 @@ const messageController = (mediator, discordClient) => {
   
   const messageRouter = (options) => {
     discordClient.on('message', message => {
+      // this probably isn't the best way to go about this, but just convert everything to lower case
+      message.content = message.content.toLowerCase();
+
       if(!message.author.bot){
         if (message.content === "!help") {
           message.reply({embed: {
@@ -67,6 +70,8 @@ const messageController = (mediator, discordClient) => {
           options.voiceRepo.leaveChannel(message);
         } else if (message.content === '!speechreport') {
           options.voiceRepo.speechReport(message);
+        } else if (message.content.indexOf('!replay', 0) > 0) {
+          options.voiceRepo.replay(message);
         } else {
           subject.notifyAllObservers(message);
         }

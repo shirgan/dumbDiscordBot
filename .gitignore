@@ -1,6 +1,7 @@
 # Config file #
 int-config.php
 config.php
+pm2.json
 
 # fms_files #
 fms_files/

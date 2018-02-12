@@ -43,7 +43,6 @@ const voiceListnerController = (mediator, discordClient) => {
               //const outputStream = generateOutputFile(voiceChannel, user);
               // pipe our audio data into the file stream
               //audioStream.pipe(outputStream);
-              //outputStream.on("data", console.log);
               audioStream.on('data', () => {
                 return;
               });
@@ -137,13 +136,27 @@ const voiceListnerController = (mediator, discordClient) => {
       });
     }
   };
+  
+  const replay = (message) => {
+    let username = message.content.split(' ');
+    if(username.length > 2) {
+      message.reply('Too many arguments, BAD!');
+    } else if (username.length < 2) {
+      message.reply("Too few arguments, BAD!");
+    } else {
+      username = username[1].trim();
+      console.log(username);
+      
+    }
+  }
 
   return Object.create({
     startVoiceListenAgent,
     joinChannel,
     leaveChannel,
     speechReport,
-    speakLog
+    speakLog,
+    replay
   });
 };
 
