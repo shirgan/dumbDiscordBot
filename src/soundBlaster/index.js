@@ -55,11 +55,14 @@ const soundController = (mediator, discordClient) => {
   let beepFilePath = path.join(__dirname, '../assets/sounds/beep');
   let lolFilePath = path.join(__dirname, '../assets/sounds/lol');
   let gotemPath = path.join(__dirname, '../assets/sounds/gotem/');
-  let dukeFile = path.join(__dirname, '../assets/sounds/rando/Duke_Alex_Hollis_02.wav');
+  let dukeFile = path.join(__dirname, '../assets/sounds/rando/NormalDuke.mp3');
   let rimshotFile = path.join(__dirname, '../assets/sounds/rimshot/rim.mp3');
-  let city14Path = path.join(__dirname, '../assets/sounds/city14')
-  let h3h3Path = path.join(__dirname, '../assets/sounds/h3h3')
-  let alexJonesPath = path.join(__dirname, '../assets/sounds/aj')
+  let city14Path = path.join(__dirname, '../assets/sounds/city14');
+  let h3h3Path = path.join(__dirname, '../assets/sounds/h3h3');
+  let alexJonesPath = path.join(__dirname, '../assets/sounds/aj');
+  let billWurtz = path.join(__dirname, '../assets/sounds/bw');
+  let lookAtThisDudePath = path.join(__dirname, '../assets/sounds/lotd');
+  let earRape = path.join(__dirname, '../assets/sounds/earRape');
 
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
@@ -100,6 +103,18 @@ const soundController = (mediator, discordClient) => {
     },
     alexJones: {
       files: generateSoundFileList(alexJonesPath),
+      curIndex: 0
+    },
+    billWurtz: {
+      files: generateSoundFileList(billWurtz),
+      curIndex: 0
+    },
+    lookAtThisDude: {
+      files: generateSoundFileList(lookAtThisDudePath),
+      curIndex: 0
+    },
+    earRape: {
+      files: generateSoundFileList(earRape),
       curIndex: 0
     }
   };
@@ -175,8 +190,19 @@ const soundController = (mediator, discordClient) => {
           joinVoiceChannel(message).then(() => {
             prepSoundFile(soundFilesObj.alexJones);
           });
+        } else if (message.content === '!bill') {
+          joinVoiceChannel(message).then(() => {
+            prepSoundFile(soundFilesObj.billWurtz);
+          });
+        } else if (message.content === '!lookatthisdude' || message.content === '!lotd') {
+          joinVoiceChannel(message).then(() => {
+            prepSoundFile(soundFilesObj.lookAtThisDude);
+          });
+        } else if (message.content === '!earrape') {
+          joinVoiceChannel(message).then(() => {
+            prepSoundFile(soundFilesObj.earRape);
+          })
         }
-        
       }
     }
   }
@@ -195,7 +221,7 @@ const soundController = (mediator, discordClient) => {
       });
       
       dispatcher.on('end', () => {
-        playNextSoundInQueue()
+        playNextSoundInQueue(options)
       });
     });
   }
@@ -243,7 +269,7 @@ const soundController = (mediator, discordClient) => {
     });
   };
   
-  const playNextSoundInQueue = () => {
+  const playNextSoundInQueue = (options) => {
     soundQueue.splice(0, 1);    // remove the first element and re-shuffle
     
     if (soundQueue.length != 0 ){
@@ -260,12 +286,13 @@ const soundController = (mediator, discordClient) => {
               ]
             });
           }
-          
-          mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
-          discordVoiceChannel.leave();
-          //reset vars so that the bot is happy
-          discordVoiceChannel = null;
+          if(options.global.stickyVoiceChannel === false) {
+            mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
+            discordVoiceChannel.leave();
+            //reset vars so that the bot is happy
+          }
           discordMessageObj = null;
+          discordVoiceChannel = null;
           discordConnectionObj = null; 
         }
       }, 1500);

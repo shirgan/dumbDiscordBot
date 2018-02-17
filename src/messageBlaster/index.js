@@ -33,38 +33,96 @@ const Subject = (mediator) => {
 const messageController = (mediator, discordClient) => {
   
   var subject = new Subject(mediator);
+  var wordDict = {};
   
   const messageRouter = (options) => {
     discordClient.on('message', message => {
-      
-      if (message.content === "!help") {
-        message.reply({embed: {
-            color: 3447003,
-            title: "Project Wiki Help Page Thinger",
-            url: "https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page",
-            description: "Attention users, please hold on! The saws are on the way!",
-            fields: [{
-                name: "Sound Triggers",
-                value: "!rando\n!hoors\n!doot\n\!beep\n!duke\n!rimjob\ngotem\nno\n!city14\n!dab\r!h3h3"
-              },
-              {
-                name: "Image Triggers",
-                value: "!img"
+      // this probably isn't the best way to go about this, but just convert everything to lower case
+      message.content = message.content.toLowerCase();
+
+      if(!message.author.bot){
+        if (message.content === "!help") {
+          message.reply({embed: {
+              color: 3447003,
+              title: "Project Wiki Help Page Thinger",
+              url: "https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page",
+              description: "Attention users, please hold on! The saws are on the way!",
+              fields: [{
+                  name: "Sound Triggers",
+                  value: "!rando\n!hoors\n!doot\n\!beep\n!duke\n!rimjob\ngotem\nno\n!city14\n!dab\r!h3h3"
+                },
+                {
+                  name: "Image Triggers",
+                  value: "!img"
+                }
+              ],
+              timestamp: new Date(),
+              footer: {
+                //icon_url: discordClient.client.user.avatarURL,
+                text: "© Deez nuts"
               }
-            ],
-            timestamp: new Date(),
-            footer: {
-              //icon_url: discordClient.client.user.avatarURL,
-              text: "© Deez nuts"
+            }
+          });
+        } else if (message.content === '!join' || message.content === '!listen') {
+          options.voiceRepo.joinChannel(message);
+        } else if (message.content === '!leave' || message.content === '!go away') {
+          mediator.emit('soundBlaster:halt');
+          options.voiceRepo.leaveChannel(message);
+        } else if (message.content === '!speechreport') {
+          options.voiceRepo.speechReport(message);
+        } else if (message.content.indexOf('!replay', 0) > 0) {
+          options.voiceRepo.replay(message);
+        } else {
+          subject.notifyAllObservers(message);
+        }
+        
+        // if word is not !topWords
+        if(message.content !== '!topwords'){
+          let messageArr = message.content.split(" ");
+          
+          for(let i=0; i<messageArr.length; i++){ 
+            if(wordDict[messageArr[i]] !== undefined && wordDict[messageArr[i]] >= 0) {
+              wordDict[messageArr[i]]++;
+            } else {
+              wordDict[messageArr[i]] = 1;
             }
           }
-        });
-      } else if (message.content === '!join' || message.content === '!listen') {
-        //options.voiceRepo.joinChannel(message);
-      } else if (message.content === '!leave' || message.content === '!go away') {
-        options.voiceRepo.leaveChannel(message);
-      } else {
-        subject.notifyAllObservers(message);
+          
+        } else {
+          let messageStr = '';
+          let sortable = [];
+          let counter = 0;
+          
+          for (var i in wordDict) {
+            sortable.push([i, wordDict[i]]);
+          }
+          
+          sortable.sort(function(a, b) {
+              return a[1] - b[1];
+          });
+          
+          for(let i in sortable.reverse()) {
+            messageStr += sortable[i][0]+": "+ sortable[i][1] + " times\r";
+            
+            if(counter <= 9 ) {
+              counter++;
+            } else {
+              break;
+            }
+          }
+          
+          message.reply({embed: {
+              color: 3447003,
+              title: "Top Words!",
+              description: "Here are the top 10 words:\r"+messageStr,
+              timestamp: new Date(),
+              footer: {
+                text: "© Deez nuts"
+              }
+            }
+          });
+
+        }
       }
     });
   };
