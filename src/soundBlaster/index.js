@@ -124,6 +124,8 @@ const soundController = (mediator, discordClient) => {
   }
   
   const prepSoundFile = (obj) => {
+
+    // Only shuffle sounds once they have all been looped through
     if(obj.curIndex === obj.files.length){
       obj.curIndex = 0;
       obj.files = shuffle(obj.files);
