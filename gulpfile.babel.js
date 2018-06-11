@@ -9,12 +9,10 @@ var fs = require('fs');
 const gulpLoadPlugins = require('gulp-load-plugins');
 const isparta = require('isparta');
 const reporter = require('jasmine-reporters');
-//const $ = gulpLoadPlugins();  //gulp-load-plugins will attempt to include all gulp related plugins fro node_modules
-
+const sequencer = require('run-sequence');
 
 // Configuration
 import buildConfig from './build/config';
-import pm2 from 'pm2';
 
 // load the individual tasks
 
@@ -28,31 +26,17 @@ let options = {
 
 let plugins = {
   gulpPlugins: gulpLoadPlugins(),
-  pm2: pm2,
   fs: fs,
   isparta: isparta,
   reporter: reporter
 }
 
-//let loadedGulpTasks = loadGulpTasks('build/tasks', gulp, options, plugins);
 require ('load-gulp-tasks')(gulp, options, plugins);
 
 // build task
-gulp.task('build:backend', () => runSequential(['clean', 'copy:backend', 'babel:backend']));
-gulp.task('compile', () => runSequential(['clean', 'copy:backendCompile', 'copy:backend', 'babel:backendCompile']));
+gulp.task('build', (callback) => sequencer('clean','copy:backend','babel:backend'));
 
 // Default task
 gulp.task('default', function() {
-  console.log('Uh... forgot your argument!');
+  console.log('No arguments provided.');
 });
-
-
-function runSequential( tasks ) {
-  if( !tasks || tasks.length <= 0 ) return;
-
-  const task = tasks[0];
-  gulp.start( task, () => {
-      console.log( `${task} finished` );
-      runSequential( tasks.slice(1) );
-  } );
-}

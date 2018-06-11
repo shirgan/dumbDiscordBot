@@ -93,3 +93,7 @@ The following gulp command reference
 # Exception handling
 All exceptions will be handled within the main thread of the application. Mediator broadcasts of unhandled or unexpected exceptions will be handeled the same, unless specific module requirements specify otherwise. All exceptions will be logged using the applications logger. 
 
+# Docker Image
+```docker build -t=dumb-discord-bot .```
+```docker run -it -e clientId=<PUT YOUR KEY HERE> dumb-discord-bot```
+
