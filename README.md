@@ -68,8 +68,8 @@ To set up a dev environment:
 
 ### Building and Running the Bot
 1) make sure you have run the setup commands from the section above^
-2) ```gulp build:backend```
-3) ```gulp serve:backend --token="yourTokenKeyHereBruh"```
+2) ```gulp build```
+3) ```clientId=test node ./dist/backend/index.js```
 Note: If you remove the token argument, you must specify the token in the config file
 
 ### Prod deployment
@@ -84,10 +84,7 @@ Note: This bot is still in development, so as of right now it is recommended tha
 ### Gulp Command Reference
 The following gulp command reference
 * ```gulp clean``` - Cleans out dist folder
-* ```gulp copy:backend``` - Copies over backend files
 * ```gulp build:backend``` - Builds the project (clean, copy, babel)
-* ```gulp serve:backend``` - Uses PM2 to launch and manage the process
-* ```gulp babel:backend``` - I'll let you guess this one
 * ```gulp lint``` - Still not fully ready
 
 # Exception handling
