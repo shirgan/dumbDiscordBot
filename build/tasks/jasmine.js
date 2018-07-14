@@ -27,17 +27,21 @@ module.exports = function(gulp, options, plugins) {
   
   gulp.task('test', () => {
     return gulp.src(options.config.test)
-      .pipe(plugins.gulpPlugins.jasmine({
-        verbose: true
+      .pipe(plugins.gulpPlugins.babel({
       }))
-      .once('end', function () {
-          process.kill(process.pid, 'SIGINT');
-          setTimeout(function() {
-              /* eslint-disable */
-              process.exit(0);
-              /* eslint-enable */
-          }, 100);
-      });
+      .pipe(gulp.dest(options.config.destDir+"/testDist"))
+      // .pipe(plugins.gulpPlugins.jasmine({
+      //   verbose: true,
+      //   includeStackTrace: true
+      // }))
+      // .once('end', function () {
+      //     process.kill(process.pid, 'SIGINT');
+      //     setTimeout(function() {
+      //         /* eslint-disable */
+      //         process.exit(0);
+      //         /* eslint-enable */
+      //     }, 100);
+      // });
   });
   
 };

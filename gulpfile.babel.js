@@ -1,7 +1,6 @@
 // This is the gulp file for the cos-web yeoman generator package. 
 // The build folder contains the dependencies for this file
 
-
 // Required
 var gulp = require('gulp');
 var fs = require('fs');
@@ -14,11 +13,7 @@ const sequencer = require('run-sequence');
 // Configuration
 import buildConfig from './build/config';
 
-// load the individual tasks
-
 // Scripts  //
-// The scripts below can be invoked using the task names as agruments
-
 let options = {
 	pattern: ['build/tasks/**/*.js'],
 	config: buildConfig.config

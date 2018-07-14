@@ -10,6 +10,6 @@ module.exports = function(gulp, options, plugins) {
     return gulp.src(options.config.src).
     pipe(plugins.gulpPlugins.babel()).
     pipe(plugins.gulpPlugins.concat('dumbDiscordBot.js')).
-    pipe(gulp.dest(options.config.targetDir+"/backend"));
+    pipe(gulp.dest(options.config.destDir+"/backend"));
   });
 };

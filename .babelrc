@@ -1,17 +1,11 @@
 {
-  "presets": ["env"],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  },
+  "presets": ["@babel/preset-env"],
   "ignore": [
     "node_modules",
     "bower_components",
     "ol-debug.js",
     "ol.js",
     "rex.default.config.js",
-    "dist",
-    "spec.js"
+    "dist"
   ]
 }
