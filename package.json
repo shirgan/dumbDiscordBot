@@ -4,7 +4,9 @@
   "description": "This is a bot",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/backend/index.js"
+    "test": "babel-node ./build/npmScripts/unitTest.js",
+    "start": "node dist/backend/index.js",
+    "coverage": "nyc npm run test"
   },
   "author": "",
   "license": "MIT",
@@ -22,9 +24,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.53",
+    "@babel/node": "^7.0.0-beta.53",
     "@babel/preset-env": "^7.0.0-beta.53",
     "@babel/register": "^7.0.0-beta.53",
     "assert": "^1.4.1",
+    "babel-plugin-istanbul": "^4.1.6",
     "core-js": "^2.5.7",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
@@ -34,15 +38,13 @@
     "gulp-eslint": "^4.0.0",
     "gulp-exit": "0.0.2",
     "gulp-if": "^2.0.2",
-    "gulp-istanbul": "^1.1.2",
     "gulp-jasmine": "^4.0.0",
     "gulp-load-plugins": "^1.5.0",
-    "isparta": "^4.0.0",
-    "istanbul": "^0.4.5",
     "jasmine": "^2.8.0",
     "jasmine-core": "^2.8.0",
     "jasmine-reporters": "^2.3.0",
     "load-gulp-tasks": "^0.1.0",
+    "nyc": "^12.0.0",
     "run-sequence": "^2.2.1"
   }
 }

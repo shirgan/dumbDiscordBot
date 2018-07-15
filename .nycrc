@@ -1,0 +1,29 @@
+
+{
+  "check-coverage": true,
+  "per-file": true,
+  "lines": 70,
+  "statements": 70,
+  "functions": 70,
+  "branches": 70,
+  "include": [
+    "./src/**/*.js"
+  ],
+  "exclude": [
+    "./src/**/*.spec.js"
+  ],
+  "reporter": [
+    "lcov",
+    "text-summary",
+    "text"
+  ],
+  "require": [
+    "@babel/register"
+  ],
+  "sourceMap": false,
+  "instrument": false,
+  "cache": true,
+  "all": true,
+  "temp-directory": "./dist/coverage/tmp",
+  "report-dir": "./dist/coverage"
+}
