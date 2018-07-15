@@ -12,7 +12,7 @@ describe('Config test', () => {
   });
   
   it("Instance obj should have a defined discordClientSettings obj key", () => {
-    expect(configFile.discordClientSettings).toBeUndefined()
+    expect(configFile.discordClientSettings).not.toBeUndefined()
   });
   
   it("Instance obj should have a defined giphySettings obj key", () => {

@@ -5,6 +5,8 @@
 var gulp = require('gulp');
 var fs = require('fs');
 
+require('@babel/register');
+
 const gulpLoadPlugins = require('gulp-load-plugins');
 const isparta = require('isparta');
 const reporter = require('jasmine-reporters');

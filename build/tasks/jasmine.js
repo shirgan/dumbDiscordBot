@@ -27,21 +27,9 @@ module.exports = function(gulp, options, plugins) {
   
   gulp.task('test', () => {
     return gulp.src(options.config.test)
-      .pipe(plugins.gulpPlugins.babel({
+      .pipe(plugins.gulpPlugins.jasmine({
+        verbose: true,
+        includeStackTrace: true
       }))
-      .pipe(gulp.dest(options.config.destDir+"/testDist"))
-      // .pipe(plugins.gulpPlugins.jasmine({
-      //   verbose: true,
-      //   includeStackTrace: true
-      // }))
-      // .once('end', function () {
-      //     process.kill(process.pid, 'SIGINT');
-      //     setTimeout(function() {
-      //         /* eslint-disable */
-      //         process.exit(0);
-      //         /* eslint-enable */
-      //     }, 100);
-      // });
   });
-  
 };
