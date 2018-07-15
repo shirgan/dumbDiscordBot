@@ -8,7 +8,6 @@ var fs = require('fs');
 require('@babel/register');
 
 const gulpLoadPlugins = require('gulp-load-plugins');
-const isparta = require('isparta');
 const reporter = require('jasmine-reporters');
 const sequencer = require('run-sequence');
 
@@ -24,7 +23,6 @@ let options = {
 let plugins = {
   gulpPlugins: gulpLoadPlugins(),
   fs: fs,
-  isparta: isparta,
   reporter: reporter
 }
 
