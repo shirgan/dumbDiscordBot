@@ -1,4 +1,3 @@
-
 {
   "per-file": true,
   "include": [
@@ -17,7 +16,7 @@
   ],
   "sourceMap": false,
   "instrument": false,
-  "cache": true,
+  "cache": false,
   "all": true,
   "temp-directory": "./dist/coverage/tmp",
   "report-dir": "./dist/coverage"
