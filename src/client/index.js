@@ -7,7 +7,7 @@ const clientController = (mediator, discordClient) => {
   const setClientSettings = (options) => {
     return new Promise((resolve, reject) => {   // lol
       //discordClient.user.setUsername('Dumb Discord Bot');
-      discordClient.user.setGame('your favorite memes since 2017');
+      discordClient.user.setActivity('your favorite memes since 2017');
     });
   };
 
@@ -24,6 +24,6 @@ const connect = (mediator, connection) => {
     }
     resolve(clientController(mediator, connection));
   });
-}
+};
 
 export {connect};

@@ -8,7 +8,7 @@ const Subject = (mediator) => {
   return {
     subscribeObserver: function(observer, name) {
       observers.push(observer);
-      mediator.emit('generic.log', "Observer registered "+name);
+      mediator.emit('generic.log', 'Observer registered '+name);
     },
     unsubscribeObserver: function(observer) {
       let index = observers.indexOf(observer);
@@ -41,25 +41,25 @@ const messageController = (mediator, discordClient) => {
       message.content = message.content.toLowerCase();
 
       if(!message.author.bot){
-        if (message.content === "!help") {
+        if (message.content === '!help') {
           message.reply({embed: {
               color: 3447003,
-              title: "Project Wiki Help Page Thinger",
-              url: "https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page",
-              description: "Attention users, please hold on! The saws are on the way!",
+              title: 'Project Wiki Help Page Thinger',
+              url: 'https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page',
+              description: 'Attention users, please hold on! The saws are on the way!',
               fields: [{
-                  name: "Sound Triggers",
-                  value: "!rando\n!hoors\n!doot\n\!beep\n!duke\n!rimjob\ngotem\nno\n!city14\n!dab\r!h3h3"
+                  name: 'Sound Triggers',
+                  value: '!rando\n!hoors\n!doot\n\!beep\n!duke\n!rimjob\ngotem\nno\n!city14\n!dab\r!h3h3'
                 },
                 {
-                  name: "Image Triggers",
-                  value: "!img"
+                  name: 'Image Triggers',
+                  value: '!img'
                 }
               ],
               timestamp: new Date(),
               footer: {
                 //icon_url: discordClient.client.user.avatarURL,
-                text: "© Deez nuts"
+                text: '© Deez nuts'
               }
             }
           });
@@ -78,7 +78,7 @@ const messageController = (mediator, discordClient) => {
         
         // if word is not !topWords
         if(message.content !== '!topwords'){
-          let messageArr = message.content.split(" ");
+          let messageArr = message.content.split(' ');
           
           for(let i=0; i<messageArr.length; i++){ 
             if(wordDict[messageArr[i]] !== undefined && wordDict[messageArr[i]] >= 0) {
@@ -102,7 +102,7 @@ const messageController = (mediator, discordClient) => {
           });
           
           for(let i in sortable.reverse()) {
-            messageStr += sortable[i][0]+": "+ sortable[i][1] + " times\r";
+            messageStr += sortable[i][0]+': '+ sortable[i][1] + ' times\r';
             
             if(counter <= 9 ) {
               counter++;
@@ -113,11 +113,11 @@ const messageController = (mediator, discordClient) => {
           
           message.reply({embed: {
               color: 3447003,
-              title: "Top Words!",
-              description: "Here are the top 10 words:\r"+messageStr,
+              title: 'Top Words!',
+              description: 'Here are the top 10 words:\r'+messageStr,
               timestamp: new Date(),
               footer: {
-                text: "© Deez nuts"
+                text: '© Deez nuts'
               }
             }
           });
@@ -142,6 +142,6 @@ const connect = (mediator, connection) => {
     }
     resolve(messageController(mediator, connection));
   });
-}
+};
 
 export {connect};

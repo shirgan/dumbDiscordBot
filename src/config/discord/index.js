@@ -1,12 +1,14 @@
 import Discord from 'discord.js';
+import { asValue } from 'awilix';
 
-const connect = (options, mediator) => {
-  mediator.once('boot.ready', () => {
+const connect = (mediator) => {
+  mediator.once('boot.ready', ( bootstrapContainer, connectionsContainer ) => {
     const client = new Discord.Client();    
     
-    if(options.discordClientId) {
-      client.login(options.discordClientId).then( (successObj) => {
-        mediator.emit('discord.ready', client);
+    if(bootstrapContainer.cradle.discordClientSettings.discordClientId) {
+      client.login(bootstrapContainer.cradle.discordClientSettings.discordClientId).then( () => {
+        connectionsContainer.register({discord: asValue(client)});
+        mediator.emit('discord.ready', bootstrapContainer, connectionsContainer);
       }, (rejectObj) => {
         mediator.emit('discord.error', rejectObj);
       });

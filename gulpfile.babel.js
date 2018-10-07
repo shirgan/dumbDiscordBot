@@ -24,7 +24,7 @@ let plugins = {
   gulpPlugins: gulpLoadPlugins(),
   fs: fs,
   reporter: reporter
-}
+};
 
 require ('load-gulp-tasks')(gulp, options, plugins);
 
