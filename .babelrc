@@ -1,5 +1,6 @@
 {
-  "presets": ["es2015"],
+  "presets": ["@babel/preset-env"],
+  "plugins": [ "istanbul" ],
   "ignore": [
     "node_modules",
     "bower_components",

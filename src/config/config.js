@@ -1,5 +1,5 @@
 const discordClientSettings = {
-  discordClientId: process.env.clientId || '<PUT UR PRIVATES HERE!>',
+  discordClientId: process.env.clientId || null,
 };
 
 const giphySettings = {

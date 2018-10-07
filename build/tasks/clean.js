@@ -3,6 +3,5 @@ module.exports = function(gulp, options, plugins) {
 	   	const del = require('del');
 		return del(['dist/**/*', 'target/**/*']);
 	});
-
 };
 
