@@ -12,6 +12,7 @@ const start = (options) => {
     
     //options.locateRepo.getMailAndParse(options);
     options.global = {stickyVoiceChannel: false};
+    options.messageRepo.getAllMessages(options);
     options.messageRepo.messageRouter(options);
     options.imageRepo.imageProcessor(options);
     options.soundRepo.soundProcessor(options);
@@ -23,11 +24,11 @@ const start = (options) => {
       reject(new Error('The server must be started with an available port'));
     } */
     
-    resolve("TEST");
+    resolve();
     
     const server = resolve(server);
   });
-}
+};
 
 
 export {start};

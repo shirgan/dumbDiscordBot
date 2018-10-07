@@ -1,6 +1,6 @@
 {
   "name": "dumb-discord-bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "This is a bot",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,7 @@
     "ffmpeg-binaries": "^4.0.0",
     "fs": "0.0.1-security",
     "https": "^1.0.0",
+    "moment": "^2.22.2",
     "node-opus": "^0.3.0",
     "path": "^0.12.7",
     "shelljs": "^0.7.8",

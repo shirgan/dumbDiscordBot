@@ -38,7 +38,7 @@ mediator.on('discord.ready', (bootstrapContainer, connectionsContainer) => {
   const discordDi = connectionsContainer.resolve('discord');
   client.connect(mediator, discordDi)
     .then(clientRepo => {
-      messageBlaster.connect(mediator, discordDi)
+      messageBlaster.connect(mediator, discordDi, bootstrapContainer)
         .then(messageRepo => {
           logger.info('MessageBlaster has connected.');
           
