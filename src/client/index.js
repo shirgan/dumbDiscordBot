@@ -7,10 +7,7 @@ const clientController = (mediator, connectionsContainer, bootstrapContainer) =>
   const discordClient = connectionsContainer.resolve('discord');
 
   const setClientSettings = (options) => {
-    return new Promise((resolve, reject) => {   // lol
-      //discordClient.user.setUsername('Dumb Discord Bot');
-      discordClient.user.setActivity('your favorite memes since 2017');
-    });
+    discordClient.user.setActivity('your favorite memes since 2017');
   };
 
   return Object.create({
