@@ -1,7 +1,9 @@
 'use strict';
-import fs from 'fs';
 
-const voiceListnerController = (mediator, discordClient) => {
+const voiceListnerController = (mediator, connectionsContainer, bootstrapContainer) => {
+  const logger = bootstrapContainer.resolve('logger');
+  const discordClient = connectionsContainer.resolve('discord');
+
   let globalOptions = null;
   let currentVoiceChannel = null;
   let currentVoiceConnection = null;
@@ -160,13 +162,13 @@ const voiceListnerController = (mediator, discordClient) => {
   });
 };
 
-const connect = (mediator, connection) => {
+const connect = (mediator, connectionsContainer, bootstrapContainer) => {
   return new Promise((resolve, reject) => {
-    if(!connection) {
+    if(!connectionsContainer) {
       reject(new Error('No discord object supplied!'));
     }
-    resolve(voiceListnerController(mediator, connection));
+    resolve(voiceListnerController(mediator, connectionsContainer, bootstrapContainer));
   });
-}
+};
 
 export {connect};

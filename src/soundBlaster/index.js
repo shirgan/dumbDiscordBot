@@ -2,7 +2,10 @@
 import fs from 'fs';
 import path from 'path';
 
-const soundController = (mediator, discordClient) => {
+const soundController = (mediator, connectionsContainer, bootstrapContainer) => {
+  const logger = bootstrapContainer.resolve('logger');
+  const discordClient = connectionsContainer.resolve('discord');
+
   let discordMessageObj = null;
   let discordConnectionObj = null;
   let discordVoiceChannel = null;
@@ -11,7 +14,7 @@ const soundController = (mediator, discordClient) => {
   const generateSoundFileList = (dir) => {
     return fs.readdirSync(dir)
     .filter(file => {
-        return path.extname(file).match("^(\.(wav|mp3))$")
+        return path.extname(file).match('^(\.(wav|mp3))$');
     })
     .map(file => {
         return path.join(dir, file);
@@ -203,15 +206,15 @@ const soundController = (mediator, discordClient) => {
         } else if (message.content === '!earrape') {
           joinVoiceChannel(message).then(() => {
             prepSoundFile(soundFilesObj.earRape);
-          })
+          });
         }
       }
-    }
-  }
+    };
+  };
   
   const soundProcessor = (options, soundObj) => {
     let observer = new Observer();
-    options.messageRepo.subject.subscribeObserver(observer, "SoundBlaster");
+    options.messageRepo.subject.subscribeObserver(observer, 'SoundBlaster');
     
     mediator.on('soundBlaster:newSound', (value) => {
       mediator.removeAllListeners('soundBlaster:halt', () => { return; });
@@ -223,10 +226,10 @@ const soundController = (mediator, discordClient) => {
       });
       
       dispatcher.on('end', () => {
-        playNextSoundInQueue(options)
+        playNextSoundInQueue(options);
       });
     });
-  }
+  };
   
   const joinVoiceChannel = (message) => {
     return new Promise((resolve, reject) => {
@@ -282,7 +285,7 @@ const soundController = (mediator, discordClient) => {
         if (soundQueue.length === 0) {
           let chance = Math.floor(Math.random()*10);
           if(chance === 9) {
-            discordMessageObj.channel.send("swag out", {
+            discordMessageObj.channel.send('swag out', {
               files: [
                 getRandomFile(departureImageFiles)
               ]
@@ -307,13 +310,13 @@ const soundController = (mediator, discordClient) => {
   });
 };
 
-const connect = (mediator, connection) => {
+const connect = (mediator, connectionsContainer, bootstrapContainer) => {
   return new Promise((resolve, reject) => {
-    if(!connection) {
+    if(!connectionsContainer) {
       reject(new Error('No discord object supplied!'));
     }
-    resolve(soundController(mediator, connection));
+    resolve(soundController(mediator, connectionsContainer, bootstrapContainer));
   });
-}
+};
 
 export {connect};

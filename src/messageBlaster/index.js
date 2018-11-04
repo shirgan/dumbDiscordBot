@@ -29,7 +29,9 @@ const Subject = (mediator) => {
   };
 };
 
-const messageController = (mediator, discordClient) => {  
+const messageController = (mediator, connectionsContainer, bootstrapContainer) => {  
+  const logger = bootstrapContainer.resolve('logger');
+  const discordClient = connectionsContainer.resolve('discord');
   var subject = new Subject(mediator);
   var wordDict = {};
 
@@ -138,7 +140,7 @@ const messageController = (mediator, discordClient) => {
             do {
               let randomIdx = Math.floor((Math.random() * messageLength));
               const chatMessage = options.messageRepo.textChannelMessages[message.channel.id][randomIdx];
-              if (!chatMessage.author.bod && chatMessage.content.length > 20) {
+              if (!chatMessage.author.bot && chatMessage.content.length > 20) {
                 completed = true;
 
                 message.reply({embed: {
@@ -229,12 +231,12 @@ const messageController = (mediator, discordClient) => {
   });
 };
 
-const connect = (mediator, connection) => {
+const connect = (mediator, connectionsContainer, bootstrapContainer) => {
   return new Promise((resolve, reject) => {
-    if(!connection) {
+    if(!connectionsContainer) {
       reject(new Error('No discord object supplied!'));
     }
-    resolve(messageController(mediator, connection));
+    resolve(messageController(mediator, connectionsContainer, bootstrapContainer));
   });
 };
 

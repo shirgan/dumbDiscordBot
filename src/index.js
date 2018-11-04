@@ -34,23 +34,23 @@ process.on('unhandledRejection', (err, promise) => {
 });
 
 mediator.on('discord.ready', (bootstrapContainer, connectionsContainer) => {
+  bootstrapContainer.register('logger', asValue(logger));
   logger.info('Discord client logged in');
-  const discordDi = connectionsContainer.resolve('discord');
-  client.connect(mediator, discordDi)
+  client.connect(mediator, connectionsContainer, bootstrapContainer)
     .then(clientRepo => {
-      messageBlaster.connect(mediator, discordDi, bootstrapContainer)
+      messageBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
         .then(messageRepo => {
           logger.info('MessageBlaster has connected.');
           
-          imageBlaster.connect(mediator, discordDi, bootstrapContainer) 
+          imageBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
             .then(imageRepo => {
               logger.info ('ImageBlaster has connected.');
                 
-              soundBlaster.connect(mediator, discordDi)
+              soundBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
                 .then(soundRepo => {
                   logger.info('SoundBlaster has connected.');
                   
-                  voiceListener.connect(mediator, discordDi) 
+                  voiceListener.connect(mediator, connectionsContainer, bootstrapContainer)
                     .then(voiceRepo => {
                       logger.info ('VoiceListener has connected.');
                   

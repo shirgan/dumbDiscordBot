@@ -10,7 +10,9 @@ const generateImageFileList = (dir) => {
   });
 };
 
-const messageController = (mediator, discordClient, giphyOptions) => {
+const messageController = (mediator, connectionsContainer, bootstrapContainer, giphyOptions) => {
+  const logger = bootstrapContainer.resolve('logger');
+  const discordClient = connectionsContainer.resolve('discord');
   
   let departureImagesPath = path.join(__dirname, '../assets/images');
   let departureImageFiles = generateImageFileList(departureImagesPath);
@@ -112,13 +114,13 @@ const messageController = (mediator, discordClient, giphyOptions) => {
   });
 };
 
-const connect = (mediator, connection, bootstrapContainer) => {
+const connect = (mediator, connectionsContainer, bootstrapContainer) => {
   const giphyOptions = bootstrapContainer.resolve('giphySettings');
   return new Promise((resolve, reject) => {
-    if(!connection) {
+    if(!connectionsContainer) {
       reject(new Error('No discord object supplied!'));
     }
-    resolve(messageController(mediator, connection, giphyOptions));
+    resolve(messageController(mediator, connectionsContainer, bootstrapContainer, giphyOptions));
   });
 };
 
