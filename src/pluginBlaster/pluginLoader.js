@@ -30,7 +30,10 @@ const pluginLoader = (data, pluginPath) => {
       if(triggerObj.hasOwnProperty('keyword') && triggerObj.hasOwnProperty('location')) {
         let fileArr = [];
         for(let j in triggerObj.location) {
-          const files = fs.readdirSync(path.join(pluginPath, triggerObj.location[j]));
+          const files = fs.readdirSync(path.join(pluginPath, triggerObj.location[j]))
+            .filter(file => {
+                return path.extname(file).match('^(\.(wav|mp3))$');
+            });
           for(let k in files) {
             fileArr.push(path.join(pluginPath, triggerObj.location[j], files[k]));
           }
@@ -38,7 +41,7 @@ const pluginLoader = (data, pluginPath) => {
         pluginObj.triggers.sound.push({
           keyword: triggerObj.keyword,
           sounds: fileArr,
-          curIndex: 0,
+          curIndex: -1,
         });
       }
     }

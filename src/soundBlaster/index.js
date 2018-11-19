@@ -52,70 +52,10 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
     return array;
   };
   
-  // sounds
-  let hoorsFilePath = path.join(__dirname, '../assets/sounds/hoors');
-  let beepFilePath = path.join(__dirname, '../assets/sounds/beep');
-  let lolFilePath = path.join(__dirname, '../assets/sounds/lol');
-  let gotemPath = path.join(__dirname, '../assets/sounds/gotem/');
-  //let dukeFile = path.join(__dirname, '../assets/sounds/rando/NormalDuke.mp3');
-  let rimshotFile = path.join(__dirname, '../assets/sounds/rimshot/rim.mp3');
-  let city14Path = path.join(__dirname, '../assets/sounds/city14');
-  let h3h3Path = path.join(__dirname, '../assets/sounds/h3h3');
-  let alexJonesPath = path.join(__dirname, '../assets/sounds/aj');
-  let billWurtz = path.join(__dirname, '../assets/sounds/bw');
-  let lookAtThisDudePath = path.join(__dirname, '../assets/sounds/lotd');
-  let earRape = path.join(__dirname, '../assets/sounds/earRape');
-
   // images
   let departureImagesPath = path.join(__dirname, '../assets/images');
   let departureImageFiles = generateImageFileList(departureImagesPath);
-  
-  let soundFilesObj = {
-    hoors: {
-      files: generateSoundFileList(hoorsFilePath),
-      curIndex: 0
-    },
-    beep: {
-      files: generateSoundFileList(beepFilePath),
-      curIndex: 0
-    },
-    lol: {
-      files: generateSoundFileList(lolFilePath),
-      curIndex: 0
-    },
-    gotem: {
-      files: generateSoundFileList(gotemPath),
-      curIndex: 0
-    },
-    city14: {
-      files: generateSoundFileList(city14Path),
-      curIndex: 0
-    },
-    h3h3: {
-      files: generateSoundFileList(h3h3Path),
-      curIndex: 0
-    },
-    alexJones: {
-      files: generateSoundFileList(alexJonesPath),
-      curIndex: 0
-    },
-    billWurtz: {
-      files: generateSoundFileList(billWurtz),
-      curIndex: 0
-    },
-    lookAtThisDude: {
-      files: generateSoundFileList(lookAtThisDudePath),
-      curIndex: 0
-    },
-    earRape: {
-      files: generateSoundFileList(earRape),
-      curIndex: 0
-    }
-  };
-  
-  for (var key in soundFilesObj) {
-    soundFilesObj[key].files = shuffle(soundFilesObj[key].files);
-  }
+
   
   const prepSoundFile = (obj) => {
 
@@ -130,9 +70,8 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
   };
 
   const prepPluginSoundFile = (obj) => {
-
     // Only shuffle sounds once they have all been looped through
-    if(obj.curIndex === obj.sounds.length){
+    if(obj.curIndex === obj.sounds.length || obj.curIndex < 0){
       obj.curIndex = 0;
       obj.sounds = shuffle(obj.sounds);
     }
@@ -145,74 +84,14 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
   const Observer = function() {
     return {
       notify: function(message) {
-        
-        if (message.content === '!hoors' || message.content === '!hoor') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.hoors);
-          });
-        } else if (message.content === '!beep') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.beep);
-          });
-        // } else if (message.content === '!duke') {
-        //   joinVoiceChannel(message).then(() => {
-        //     addToQueue(dukeFile);
-        //   });
-        } else if (message.content === '!rim' || message.content === '!rimshot' || message.content === '!rimjob') {
-          joinVoiceChannel(message).then(() => {
-            addToQueue(rimshotFile);
-          });
-        } else if (message.content === '!lol' || message.content === 'lol' || message.content === 'lel' || message.content === 'lul') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.lol);
-          });
-        } else if (message.content === 'gotem') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.gotem);
-          });
-        } else if (message.content === 'no' || message.content === 'noo' || message.content === 'nooo') {
-          joinVoiceChannel(message).then(() => {
-            addToQueue(path.join(__dirname, '../assets/sounds/static/nooo.mp3'));
-          });
-        } else if (message.content === '!city14') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.city14);
-          });
-        } else if (message.content === '!dab') {
-          joinVoiceChannel(message).then(() => {
-            addToQueue(path.join(__dirname, '../assets/sounds/static/dab.wav'));
-          });
-        } else if (message.content === '!h3h3') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.h3h3);
-          });
-        } else if (message.content === '!aj') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.alexJones);
-          });
-        } else if (message.content === '!bill') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.billWurtz);
-          });
-        } else if (message.content === '!lookatthisdude' || message.content === '!lotd') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.lookAtThisDude);
-          });
-        } else if (message.content === '!earrape') {
-          joinVoiceChannel(message).then(() => {
-            prepSoundFile(soundFilesObj.earRape);
-          });
-        } else {
-          // run it against the plugins
-          console.log(soundTriggers);
-          for (let i = 0; i < soundTriggers.length; i++) {
-            const triggers = soundTriggers[i].keyword;
-            for (let j = 0; j < triggers.length; j++) {
-              if (message.content === triggers[j]) {
-                joinVoiceChannel(message).then(() => {
-                  prepPluginSoundFile(soundTriggers[i]);
-                });
-              }
+        // run it against the plugins
+        for (let i = 0; i < soundTriggers.length; i++) {
+          const triggers = soundTriggers[i].keyword;
+          for (let j = 0; j < triggers.length; j++) {
+            if (message.content === triggers[j]) {
+              joinVoiceChannel(message).then(() => {
+                prepPluginSoundFile(soundTriggers[i]);
+              });
             }
           }
         }
@@ -223,7 +102,8 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
   const soundProcessor = (options, soundObj) => {
     const plugins = options.pluginsRepo.getPlugins();
     for (let i = 0; i < plugins.length; i++) {
-      soundTriggers = soundTriggers.concat(plugins[i].triggers.sound);
+      const soundList = plugins[i].triggers.sound;
+      soundTriggers = soundTriggers.concat(soundList);
     }
 
     let observer = new Observer();

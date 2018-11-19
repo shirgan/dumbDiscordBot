@@ -19,6 +19,77 @@
       "location": [
         "/sounds/random/"
       ]
+    },{
+      "keyword": [
+        "!beep"
+      ],
+      "location": [
+        "/sounds/beep/"
+      ]
+    },{
+      "keyword": [
+        "!rim",
+        "!rimjob",
+        "!rimshot"
+      ],
+      "location": [
+        "/sounds/rimshot/"
+      ]
+    },{
+      "keyword": [
+        "!lol",
+        "lol",
+        "lel",
+        "lul"
+      ],
+      "location": [
+        "/sounds/lol/"
+      ]
+    },{
+      "keyword": [
+        "!gotem",
+        "gotem"
+      ],
+      "location": [
+        "/sounds/gotem/"
+      ]
+    },{
+      "keyword": [
+        "no",
+        "noo",
+        "nooo"
+      ],
+      "location": [
+        "/sounds/no/"
+      ]
+    },{
+      "keyword": [
+        "!aj"
+      ],
+      "location": [
+        "/sounds/alexjones/"
+      ]
+    },{
+      "keyword": [
+        "!h3h3"
+      ],
+      "location": [
+        "/sounds/h3h3/"
+      ]
+    },{
+      "keyword": [
+        "!latd"
+      ],
+      "location": [
+        "/sounds/lookatthisdude/"
+      ]
+    },{
+      "keyword": [
+        "!dab"
+      ],
+      "location": [
+        "/sounds/dab/"
+      ]
     }
   ]
 }

@@ -1,0 +1,44 @@
+{
+  "name":"GetGeed",
+  "author":"dot1q",
+  "version":"0.0.1",
+  "soundTriggers": [
+    {
+      "keyword": [
+        "!hoor",
+        "!hoors"
+      ],
+      "location": [
+        "/sounds/hoors/"
+      ]
+    },{
+      "keyword": [
+        "!city14"
+      ],
+      "location": [
+        "/sounds/city14/"
+      ]
+    },{
+      "keyword": [
+        "!bill"
+      ],
+      "location": [
+        "/sounds/billwurtz/"
+      ]
+    },{
+      "keyword": [
+        "!earrape"
+      ],
+      "location": [
+        "/sounds/earrape/"
+      ]
+    },{
+      "keyword": [
+        "!duke"
+      ],
+      "location": [
+        "/sounds/duke/"
+      ]
+    }
+  ]
+}
