@@ -7,9 +7,9 @@ const pluginLoader = (data, pluginPath) => {
     version: '0.0.0',
     author: 'unknown',
     triggers: {
-      image: [],
       sound: [],
     },
+    imagePool: []
   };
 
   if (data.hasOwnProperty('name')) {
@@ -45,9 +45,20 @@ const pluginLoader = (data, pluginPath) => {
         });
       }
     }
-    //pluginObj.triggers.sound.push()
   }
 
+  if (data.hasOwnProperty('imageLocations')) {
+    for( let i = 0; i < data.imageLocations.length; i++) {
+      const files = fs.readdirSync(path.join(pluginPath, data.imageLocations[i]))
+        .filter(file => {
+            return path.extname(file).match('^(\.(jpg|jpeg|png))$');
+        });
+      for (let j in files) {
+        pluginObj.imagePool.push(path.join(pluginPath, data.imageLocations[i], files[j]));
+      }
+    }
+  }
+  console.log(pluginObj.imagePool);
 
   return pluginObj;
 };

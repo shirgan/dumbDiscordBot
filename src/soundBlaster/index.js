@@ -11,16 +11,6 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
   let discordConnectionObj = null;
   let discordVoiceChannel = null;
   let soundQueue = [];
-  
-  const generateSoundFileList = (dir) => {
-    return fs.readdirSync(dir)
-    .filter(file => {
-        return path.extname(file).match('^(\.(wav|mp3))$');
-    })
-    .map(file => {
-        return path.join(dir, file);
-    });
-  };
 
   const generateImageFileList = (dir) => {
     return fs.readdirSync(dir)
@@ -56,19 +46,6 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
   let departureImagesPath = path.join(__dirname, '../assets/images');
   let departureImageFiles = generateImageFileList(departureImagesPath);
 
-  
-  const prepSoundFile = (obj) => {
-
-    // Only shuffle sounds once they have all been looped through
-    if(obj.curIndex === obj.files.length){
-      obj.curIndex = 0;
-      obj.files = shuffle(obj.files);
-    }
-    
-    addToQueue(obj.files[obj.curIndex]);
-    obj.curIndex++;
-  };
-
   const prepPluginSoundFile = (obj) => {
     // Only shuffle sounds once they have all been looped through
     if(obj.curIndex === obj.sounds.length || obj.curIndex < 0){
@@ -98,12 +75,34 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
       }
     };
   };
+
+  const mergeSoundTriggers = (sndList) => {
+    let addedCount = 0;
+    for (let i = 0; i < soundTriggers.length; i++) { // All current sounds
+      for( let j = 0; j < soundTriggers[i].keyword.length; j++ ) { // All current sounds trigger arr
+        if( sndList.keyword.indexOf(soundTriggers[i].keyword[j]) > -1) {
+          // If trigger already exists, merge the sounds
+          soundTriggers[i].sounds = soundTriggers[i].sounds.concat(sndList.sounds);
+          addedCount++;
+        }
+      }      
+    }
+    if(addedCount > 0) {
+      return true;
+    }
+    return false;
+  };
   
   const soundProcessor = (options, soundObj) => {
     const plugins = options.pluginsRepo.getPlugins();
     for (let i = 0; i < plugins.length; i++) {
       const soundList = plugins[i].triggers.sound;
-      soundTriggers = soundTriggers.concat(soundList);
+      for ( let j = 0; j < soundList.length; j++ ) {
+        // merge on a sound by sound basis
+        if( !mergeSoundTriggers(soundList[j])) {
+          soundTriggers.push(soundList[j]);
+        };
+      }
     }
 
     let observer = new Observer();

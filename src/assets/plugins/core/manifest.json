@@ -91,5 +91,8 @@
         "/sounds/dab/"
       ]
     }
+  ],
+  "imageLocations": [
+    "/images/random/"
   ]
 }
