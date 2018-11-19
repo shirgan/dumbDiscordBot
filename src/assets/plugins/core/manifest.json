@@ -1,0 +1,24 @@
+{
+  "name":"DumbCore",
+  "author":"dot1q",
+  "version":"0.0.1",
+  "soundTriggers": [
+    {
+      "keyword": [
+        "!doot"
+      ],
+      "location": [
+        "/sounds/doot/"
+      ]
+    },{
+      "keyword": [
+        "!rando",
+        "!random",
+        "!r"
+      ],
+      "location": [
+        "/sounds/random/"
+      ]
+    }
+  ]
+}

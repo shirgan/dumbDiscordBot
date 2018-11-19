@@ -1,6 +1,4 @@
 'use strict';
-import fs from 'fs';
-import path from 'path';
 
 const clientController = (mediator, connectionsContainer, bootstrapContainer) => {
   const logger = bootstrapContainer.resolve('logger');

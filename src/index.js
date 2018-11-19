@@ -3,6 +3,7 @@
 const {EventEmitter} = require('events');
 import * as di from './config';
 import { asValue } from 'awilix';
+import * as pluginBlaster from './pluginBlaster';
 import * as soundBlaster from './soundBlaster/index';
 import * as messageBlaster from './messageBlaster/index';
 import * as imageBlaster from './imageBlaster/index';
@@ -38,33 +39,37 @@ mediator.on('discord.ready', (bootstrapContainer, connectionsContainer) => {
   logger.info('Discord client logged in');
   client.connect(mediator, connectionsContainer, bootstrapContainer)
     .then(clientRepo => {
-      messageBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
-        .then(messageRepo => {
-          logger.info('MessageBlaster has connected.');
-          
-          imageBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
-            .then(imageRepo => {
-              logger.info ('ImageBlaster has connected.');
-                
-              soundBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
-                .then(soundRepo => {
-                  logger.info('SoundBlaster has connected.');
-                  
-                  voiceListener.connect(mediator, connectionsContainer, bootstrapContainer)
-                    .then(voiceRepo => {
-                      logger.info ('VoiceListener has connected.');
-                  
-                    return server.start({
-                      messageRepo,
-                      imageRepo,
-                      soundRepo,
-                      clientRepo,
-                      voiceRepo
+      pluginBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
+        .then(pluginsRepo => {
+          messageBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
+            .then(messageRepo => {
+              logger.info('MessageBlaster has connected.');
+              
+              imageBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
+                .then(imageRepo => {
+                  logger.info ('ImageBlaster has connected.');
+                    
+                  soundBlaster.connect(mediator, connectionsContainer, bootstrapContainer)
+                    .then(soundRepo => {
+                      logger.info('SoundBlaster has connected.');
+                      
+                      voiceListener.connect(mediator, connectionsContainer, bootstrapContainer)
+                        .then(voiceRepo => {
+                          logger.info ('VoiceListener has connected.');
+                      
+                        return server.start({
+                          pluginsRepo,
+                          messageRepo,
+                          imageRepo,
+                          soundRepo,
+                          clientRepo,
+                          voiceRepo
+                        });
+                      }).then(app => {
+                        logger.info('Dumb Discord Bot Service started successfully.');
+                      });
+                      
                     });
-                  }).then(app => {
-                    logger.info('Dumb Discord Bot Service started successfully.');
-                  });
-                  
                 });
             });
         });

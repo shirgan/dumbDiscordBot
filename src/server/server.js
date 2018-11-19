@@ -9,16 +9,20 @@ const start = (options) => {
     if (!options.clientRepo) { 
       reject(new Error('The server must have a connected clientRepo'));
     }
+
+    options.pluginsRepo.loadPlugins().then(success => {
+      options.global = {stickyVoiceChannel: false};
+      options.messageRepo.getAllMessages(options);
+      options.messageRepo.messageRouter(options);
+      options.imageRepo.imageProcessor(options);
+      options.soundRepo.soundProcessor(options);
+      options.soundRepo.soundHalter();
+      options.clientRepo.setClientSettings();
+      options.voiceRepo.startVoiceListenAgent(options);
+    }, failed => {
+      console.log('aw crap');
+    });
     
-    //options.locateRepo.getMailAndParse(options);
-    options.global = {stickyVoiceChannel: false};
-    options.messageRepo.getAllMessages(options);
-    options.messageRepo.messageRouter(options);
-    options.imageRepo.imageProcessor(options);
-    options.soundRepo.soundProcessor(options);
-    options.soundRepo.soundHalter();
-    options.clientRepo.setClientSettings();
-    options.voiceRepo.startVoiceListenAgent(options);
     
     /*if (!options.port) {
       reject(new Error('The server must be started with an available port'));
