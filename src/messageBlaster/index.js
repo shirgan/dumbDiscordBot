@@ -41,7 +41,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
     let channels = discordClient.channels.array();
     for(let idx in channels) {
       const channel = channels[idx];
-      if (channel.type === 'text') {
+      if (channel.type === 'text' && channel.permissionsFor(discordClient.user).has('READ_MESSAGE_HISTORY')) {
         channelPromises.push(
           new Promise((resolve, reject) => {
             let messageArr = new Array();
@@ -49,34 +49,31 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
             let lastId = channel.lastMessageID;
             let filterRequestCount = 100;
 
-            
-            if (channel.permissionsFor(discordClient.user).has('READ_MESSAGE_HISTORY')) {
-              console.log(`Gathering messages from... ${channel.guild.name}:${channel.name}`);
+            console.log(`Gathering messages from... ${channel.guild.name}:${channel.name}`);
 
-              const getChannelMessages = () => {
-                channel.fetchMessages({limit: filterRequestCount, before: lastId})
-                  .then((newMessages) => {
-                    // console.log(`got ${newMessages.size} new messages!`);
-                    messageArr = messageArr.concat(newMessages.array());
-                    lastCount = newMessages.size;
-                    lastId = newMessages.array()[newMessages.size - 1].id;
+            const getChannelMessages = () => {
+              channel.fetchMessages({limit: filterRequestCount, before: lastId})
+                .then((newMessages) => {
+                  // console.log(`got ${newMessages.size} new messages!`);
+                  messageArr = messageArr.concat(newMessages.array());
+                  lastCount = newMessages.size;
+                  lastId = newMessages.array()[newMessages.size - 1].id;
 
-                    if (lastCount === filterRequestCount) {
-                      getChannelMessages();
-                    } else {
-                      // done
-                      console.log('the deed is done');
-                      let channelObj = {};
-                      channelObj[channel.id] = messageArr;
-                      resolve(channelObj);
-                    }
-                  }, (err) => {
-                    reject(new Error(err));
-                  });
-              };
+                  if (lastCount === filterRequestCount) {
+                    getChannelMessages();
+                  } else {
+                    // done
+                    let channelObj = {};
+                    channelObj[channel.id] = messageArr;
+                    resolve(channelObj);
+                  }
+                }, (err) => {
+                  console.log('something went wrong..');
+                  reject(new Error(err));
+                });
+            };
 
-              getChannelMessages();
-            }
+            getChannelMessages();
           })
         );
       }
@@ -165,6 +162,15 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
                 }
               });
           }
+        } else if (message.content === '!plugins') {
+          const pluginList = options.pluginsRepo.getPluginList();
+          message.reply(
+            {embed: {
+              color: 3447003,
+              title: 'Current Plugins',
+              description: pluginList.map(x => `${x.name}@${x.version} by ${x.author}`).join('\n'),
+            }
+          });
         } else {
           subject.notifyAllObservers(message);
         }
