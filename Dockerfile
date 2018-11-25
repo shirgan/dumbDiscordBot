@@ -18,8 +18,9 @@ RUN chown -R nupp:nupp $HOME/* /usr/local/bin/dumb-init && \
     chmod +x /usr/local/bin/dumb-init && \
     npm cache clean --force && \
     npm install -g gulp && \
-    npm install --silent --progress=true && \
+    npm install --silent --progress=false && \
     gulp build && \
+    rm -rf src && \
     npm prune --production && \
     chown -R nupp:nupp $HOME/*
 
