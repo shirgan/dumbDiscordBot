@@ -1,4 +1,4 @@
-node('node') {
+node {
   def app
   currentBuild.result = "SUCCESS"
   try {
