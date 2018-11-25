@@ -27,12 +27,12 @@ node {
     }
     
     stage('Build Docker Image') {
-      app = docker.build("gbrewster/dumbdiscordbot")
+      app = docker.build("gbrewster/dumbdiscordbot:latest-${env.BRANCH_NAME}")
     }
     
     stage('Push Docker Image') {
       docker.withRegistry('', 'f1a38657-321b-4863-894f-08f07bb63829') {
-        app.push("latest-dev")
+        app.push()
       }
     }
   } catch (err) {
