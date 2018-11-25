@@ -51,15 +51,13 @@ const pluginLoader = (data, pluginPath) => {
     for( let i = 0; i < data.imageLocations.length; i++) {
       const files = fs.readdirSync(path.join(pluginPath, data.imageLocations[i]))
         .filter(file => {
-            return path.extname(file).match('^(\.(jpg|jpeg|png))$');
+            return path.extname(file).match('^(\.(jpg|jpeg|png|gif))$');
         });
       for (let j in files) {
         pluginObj.imagePool.push(path.join(pluginPath, data.imageLocations[i], files[j]));
       }
     }
   }
-  console.log(pluginObj.imagePool);
-
   return pluginObj;
 };
 

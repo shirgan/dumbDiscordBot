@@ -1,23 +1,15 @@
 'use strict';
-import fs from 'fs';
-import path from 'path';
 
 const soundController = (mediator, connectionsContainer, bootstrapContainer) => {
   const logger = bootstrapContainer.resolve('logger');
   const discordClient = connectionsContainer.resolve('discord');
   let soundTriggers = [];
+  let imageFiles = [];
 
   let discordMessageObj = null;
   let discordConnectionObj = null;
   let discordVoiceChannel = null;
   let soundQueue = [];
-
-  const generateImageFileList = (dir) => {
-    return fs.readdirSync(dir)
-    .map(file => {
-        return path.join(dir, file);
-    });
-  };
   
   let getRandomFile = (items) => {
     return items[Math.floor(Math.random() * items.length)];
@@ -41,10 +33,6 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
 
     return array;
   };
-  
-  // images
-  let departureImagesPath = path.join(__dirname, '../assets/images');
-  let departureImageFiles = generateImageFileList(departureImagesPath);
 
   const prepPluginSoundFile = (obj) => {
     // Only shuffle sounds once they have all been looped through
@@ -97,6 +85,7 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
     const plugins = options.pluginsRepo.getPlugins();
     for (let i = 0; i < plugins.length; i++) {
       const soundList = plugins[i].triggers.sound;
+      imageFiles = imageFiles.concat(plugins[i].imagePool);
       for ( let j = 0; j < soundList.length; j++ ) {
         // merge on a sound by sound basis
         if( !mergeSoundTriggers(soundList[j])) {
@@ -176,13 +165,13 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
       setTimeout(() => {
         if (soundQueue.length === 0) {
           let chance = Math.floor(Math.random()*10);
-          if(chance === 9) {
+          //if(chance === 9) {
             discordMessageObj.channel.send('swag out', {
               files: [
-                getRandomFile(departureImageFiles)
+                getRandomFile(imageFiles)
               ]
             });
-          }
+          //}
           if(options.global.stickyVoiceChannel === false) {
             mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
             discordVoiceChannel.leave();

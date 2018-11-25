@@ -14,15 +14,19 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer, g
   const logger = bootstrapContainer.resolve('logger');
   const discordClient = connectionsContainer.resolve('discord');
   
-  let departureImagesPath = path.join(__dirname, '../assets/images');
-  let departureImageFiles = generateImageFileList(departureImagesPath);
-  
+  let departureImageFiles = [];
+
   let getRandomFile = (items) => {
     return items[Math.floor(Math.random()*items.length)];
   };
 
   
   const imageProcessor = (options) => {
+    const plugins = options.pluginsRepo.getPlugins();
+    for (let i = 0; i < plugins.length; i++) {
+      departureImageFiles = departureImageFiles.concat(plugins[i].imagePool);
+    }
+
     let observer = new Observer();
     options.messageRepo.subject.subscribeObserver(observer, 'ImageBlaster');
     
@@ -70,40 +74,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer, g
             });
           }
         } else if (message.content != null) {
-          /*if(giphyOptions.apiKey) {
-            let chance = Math.floor(Math.random()*2);
-            if(chance === 1) {  // 50%
-              let str_arr = message.content.split(' ');
-              
-              let word = str_arr[Math.floor(str_arr.length/2)];
-              let data = '';
-              let options = {
-                host: 'api.giphy.com',
-                path: '/v1/gifs/random?api_key='+giphyOptions.apiKey+'&tag='+word,
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Content-Length': Buffer.byteLength(data)
-                }
-              }
-              makeHttpRequest(options, data, (statusCode, result) => {
-                if (statusCode != 200) {
-                  message.channel.send('😢 I couldn't complete the request. ' + statusCode);
-                } else {
-                  mediator.emit('generic.log',result);
-                  if(result.data.image_url) {
-                    message.channel.send({
-                      'embed': {
-                        'image': {
-                        'url': result.data.image_url,
-                        }
-                      }
-                    });
-                  }
-                }
-              });
-            }
-          }*/
+
         }
       }
     };

@@ -1,0 +1,10 @@
+{
+  "name":"SpongeBob",
+  "author":"dot1q",
+  "version":"0.0.1",
+  "soundTriggers": [
+  ],
+  "imageLocations": [
+    "/images/random/"
+  ]
+}

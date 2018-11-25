@@ -40,5 +40,8 @@
         "/sounds/duke/"
       ]
     }
+  ],
+  "imageLocations": [
+    "/images/random/"
   ]
 }
