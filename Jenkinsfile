@@ -31,7 +31,7 @@ node {
     }
     
     stage('Push Docker Image') {
-      docker.withRegistry('https://registry.hub.docker.com', 'f1a38657-321b-4863-894f-08f07bb63829') {
+      docker.withRegistry('', 'f1a38657-321b-4863-894f-08f07bb63829') {
         app.push("latest-dev")
       }
     }
