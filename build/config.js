@@ -4,11 +4,12 @@ export default {
   config: {
     src: [
       'src/**/*.js',
-      '!src/**/*.spec.js',
+      '!src/**/*.[sS]pec.js',
       '!src/**/{fixtures,templates}/**'
     ],
     backEndsrc: [
-      'src/**/*.js'
+      'src/**/*.js',
+      '!src/**/*.[sS]pec.js',
     ],
     backEndTemplates: [
       'src/**/*',
@@ -35,9 +36,8 @@ export default {
       //'src/**/templates/**/.*'
     ],
     destDir: "dist",
-    targetDir: "target",
     test: [
-      'src/**/*.spec.js'
+      'src/**/*.[sS]pec.js'
     ]
   }
 };

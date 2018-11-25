@@ -1,7 +1,6 @@
 'use strict';
 import fs from 'fs';
 import path from 'path';
-import util from 'util';
 import https from 'https';
 
 const generateImageFileList = (dir) => {
@@ -11,19 +10,25 @@ const generateImageFileList = (dir) => {
   });
 };
 
-const messageController = (mediator, discordClient, addlOptions) => {
+const messageController = (mediator, connectionsContainer, bootstrapContainer, giphyOptions) => {
+  const logger = bootstrapContainer.resolve('logger');
+  const discordClient = connectionsContainer.resolve('discord');
   
-  let departureImagesPath = path.join(__dirname, '../assets/images');
-  let departureImageFiles = generateImageFileList(departureImagesPath);
-  
+  let departureImageFiles = [];
+
   let getRandomFile = (items) => {
     return items[Math.floor(Math.random()*items.length)];
   };
 
   
   const imageProcessor = (options) => {
+    const plugins = options.pluginsRepo.getPlugins();
+    for (let i = 0; i < plugins.length; i++) {
+      departureImageFiles = departureImageFiles.concat(plugins[i].imagePool);
+    }
+
     let observer = new Observer();
-    options.messageRepo.subject.subscribeObserver(observer, "ImageBlaster");
+    options.messageRepo.subject.subscribeObserver(observer, 'ImageBlaster');
     
   };
 
@@ -31,101 +36,64 @@ const messageController = (mediator, discordClient, addlOptions) => {
     return {
       notify: function(message) {
         if (message.content === '!img' || message.content === '!image') {
-          message.channel.send("Is this what you wanted to see?", {
+          message.channel.send('Is this what you wanted to see?', {
             files: [
               getRandomFile(departureImageFiles)
             ]
           });
         } else if (message.content === '!giphy' || message.content === '!gif') {
           
-          if(addlOptions.giphyApiKey) {
+          if(giphyOptions.apiKey) {
             let data = '';
             let options = {
               host: 'api.giphy.com',
-              path: '/v1/gifs/random?api_key='+addlOptions.giphyApiKey,
+              path: '/v1/gifs/random?api_key='+giphyOptions.apiKey,
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
                 'Content-Length': Buffer.byteLength(data)
               }
-            }
+            };
             makeHttpRequest(options, data, (statusCode, result) => {
-              console.log("making img call");
+              console.log('making img call');
               if (statusCode != 200) {
-                message.channel.send("😢 I couldn't complete the request. " + statusCode);
+                message.channel.send('😢 I couldn\'t complete the request. ' + statusCode);
               } else {
                 if(result.data.image_url) {
-                  message.channel.send("How'd I do?", {
-                    "embed": {
-                      "image": {
-                      "url": result.data.image_url,
+                  message.channel.send('How\'d I do?', {
+                    'embed': {
+                      'image': {
+                      'url': result.data.image_url,
                       }
                     }
                   });
                 } else {
-                  message.channel.send("😟 I found nothing.")
+                  message.channel.send('😟 I found nothing.');
                 }
               }
             });
           }
         } else if (message.content != null) {
-          /*if(addlOptions.giphyApiKey) {
-            let chance = Math.floor(Math.random()*2);
-            if(chance === 1) {  // 50%
-              let str_arr = message.content.split(' ');
-              
-              let word = str_arr[Math.floor(str_arr.length/2)];
-              let data = '';
-              let options = {
-                host: 'api.giphy.com',
-                path: '/v1/gifs/random?api_key='+addlOptions.giphyApiKey+'&tag='+word,
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Content-Length': Buffer.byteLength(data)
-                }
-              }
-              makeHttpRequest(options, data, (statusCode, result) => {
-                if (statusCode != 200) {
-                  message.channel.send("😢 I couldn't complete the request. " + statusCode);
-                } else {
-                  mediator.emit('generic.log',result);
-                  if(result.data.image_url) {
-                    message.channel.send({
-                      "embed": {
-                        "image": {
-                        "url": result.data.image_url,
-                        }
-                      }
-                    });
-                  }
-                }
-              });
-            }
-          }*/
+
         }
       }
     };
-  }
+  };
   
   return Object.create({
     imageProcessor
   });
 };
 
-const connect = (mediator, connection, config) => {
-  let addlOptions = {};
-  if(config.giphySettings && config.giphySettings.apiKey) {
-    addlOptions.giphyApiKey = config.giphySettings.apiKey;
-  }
-  
+const connect = (mediator, connectionsContainer, bootstrapContainer) => {
+  const giphyOptions = bootstrapContainer.resolve('giphySettings');
   return new Promise((resolve, reject) => {
-    if(!connection) {
+    if(!connectionsContainer) {
       reject(new Error('No discord object supplied!'));
     }
-    resolve(messageController(mediator, connection, addlOptions));
+    resolve(messageController(mediator, connectionsContainer, bootstrapContainer, giphyOptions));
   });
-}
+};
 
 const makeHttpRequest = (options, payload, callback) => {
   options.port = 443;
@@ -135,13 +103,13 @@ const makeHttpRequest = (options, payload, callback) => {
     
     // Listener to receive data
     result.on('data', (chunk) => {
-        output += chunk
+        output += chunk;
     });
 
     // Listener for intializing callback after receiving complete response
     result.on('end', () => {
-        let obj = JSON.parse(output)
-        callback(result.statusCode, obj)
+        let obj = JSON.parse(output);
+        callback(result.statusCode, obj);
     });
   });
   
