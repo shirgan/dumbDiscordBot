@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "babel-node ./build/npmScripts/unitTest.js",
-    "serve": "gulp build & cross-env clientId=MzgwMTk4ODI3MjIwNjY0MzMw.DsAPQg.6-LLbRBvwV9O2OafI0VHNCjbrYo npm run start",
+    "serve": "gulp build & cross-env clientId=asdfa npm run start",
     "start": "node dist/backend/index.js",
     "coverage": "nyc npm run test"
   },
@@ -18,7 +18,7 @@
     "fs": "0.0.1-security",
     "https": "^1.0.0",
     "moment": "^2.22.2",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.3.0",
     "node-opus": "^0.3.0",
     "path": "^0.12.7",
     "shelljs": "^0.7.8",

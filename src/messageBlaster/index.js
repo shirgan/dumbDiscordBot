@@ -1,5 +1,6 @@
 'use strict';
 import moment from 'moment';
+import fetch from 'node-fetch';
 
 const Subject = (mediator) => {
   let observers = [];
@@ -120,47 +121,17 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
               }
             }
           });
-        } else if (message.content === '!join' || message.content === '!listen') {
-          options.voiceRepo.joinChannel(message);
-        } else if (message.content === '!leave' || message.content === '!go away') {
-          mediator.emit('soundBlaster:halt');
-          options.voiceRepo.leaveChannel(message);
-        } else if (message.content === '!speechreport') {
-          options.voiceRepo.speechReport(message);
-        } else if (message.content.indexOf('!replay', 0) > 0) {
-          options.voiceRepo.replay(message);
         } else if (message.content === '!quote') {
-          if (options.messageRepo.quoteReady && options.messageRepo.textChannelMessages.hasOwnProperty(message.channel.id)) {
-            const messageLength = options.messageRepo.textChannelMessages[message.channel.id].length;
-            let completed = false;
-            // give back that random message!
-            do {
-              let randomIdx = Math.floor((Math.random() * messageLength));
-              const chatMessage = options.messageRepo.textChannelMessages[message.channel.id][randomIdx];
-              if (!chatMessage.author.bot && chatMessage.content.length > 20) {
-                completed = true;
-
-                message.reply({embed: {
-                  color: 3447003,
-                  title: `Beep bep, old post from ${chatMessage.author.username}`,
-                  description: `${chatMessage.content} @ ${moment(chatMessage.createdTimestamp).format('MM/DD/YYYY hh:mm a')}`,
-                }});
-              }
-            } while (completed === false);
-          } else if (options.messageRepo.quoteReady) {
+          const resp = getQuote(options.messageRepo, message);
+          if(resp.result === 'success') {
+            console.log(resp.messageObj);
             message.reply({embed: {
               color: 3447003,
-              title: 'Quote machine broke!',
-              description: 'I don\'t have this channel cached, restart bot pls',
+              title: `Beep bep, old post from ${resp.messageObj.author.username}`,
+              description: `${resp.messageObj.content} @ ${moment(resp.messageObj.createdTimestamp).format('MM/DD/YYYY hh:mm a')}`,
             }});
           } else {
-              message.reply(
-                {embed: {
-                  color: 3447003,
-                  title: 'I need more time!',
-                  description: 'I am still processing the old chat messages...',
-                }
-              });
+            message.reply(resp.message);
           }
         } else if (message.content === '!plugins') {
           const pluginList = options.pluginsRepo.getPluginList();
@@ -171,59 +142,85 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
               description: pluginList.map(x => `${x.name}@${x.version} by ${x.author}`).join('\n'),
             }
           });
+        } else if (message.content === '!meme') {
+          let topText = 'Top Text';
+          let bottomText = 'Bottom Text';
+          let resp = null;
+
+          do {
+            resp = getQuote(options.messageRepo, message);
+            if (resp.result === 'success') {
+              if (resp.messageObj.embeds.length === 0) {
+                topText = resp.messageObj.content;
+              }
+            } else {
+              message.reply(resp.message);
+              break;
+            }
+          } while ( resp.messageObj.embeds.length !== 0 );
+
+          do {
+            resp = getQuote(options.messageRepo, message);
+            if (resp.result === 'success') {
+              if (resp.messageObj.embeds.length === 0) {
+                bottomText = resp.messageObj.content;
+              }
+            } else {
+              message.reply(resp.message);
+              break;
+            }
+          } while ( resp.messageObj.embeds.length !== 0 );
+          
+          getMemeImageList().then((success) => {
+            const memeType = success[Math.floor((Math.random() * success.length))];
+            message.reply(
+              {embed: {
+                color: 3447003,
+                title: 'test',
+                image: {
+                  url: `http://apimeme.com/meme?meme=${encodeURIComponent(memeType)}&top=${encodeURIComponent(topText)}&bottom=${encodeURIComponent(bottomText)}`
+                }
+              }
+            });
+          }, (failed) => {
+
+          });
+
         } else {
           subject.notifyAllObservers(message);
         }
-        
-        // if word is not !topWords
-        if(message.content !== '!topwords'){
-          let messageArr = message.content.split(' ');
-          
-          for(let i=0; i<messageArr.length; i++){ 
-            if(wordDict[messageArr[i]] !== undefined && wordDict[messageArr[i]] >= 0) {
-              wordDict[messageArr[i]]++;
-            } else {
-              wordDict[messageArr[i]] = 1;
-            }
-          }
-          
-        } else {
-          let messageStr = '';
-          let sortable = [];
-          let counter = 0;
-          
-          for (var i in wordDict) {
-            sortable.push([i, wordDict[i]]);
-          }
-          
-          sortable.sort(function(a, b) {
-              return a[1] - b[1];
-          });
-          
-          for(let i in sortable.reverse()) {
-            messageStr += sortable[i][0]+': '+ sortable[i][1] + ' times\r';
-            
-            if(counter <= 9 ) {
-              counter++;
-            } else {
-              break;
-            }
-          }
-          
-          message.reply({embed: {
-              color: 3447003,
-              title: 'Top Words!',
-              description: 'Here are the top 10 words:\r'+messageStr,
-              timestamp: new Date(),
-              footer: {
-                text: '© Deez nuts'
-              }
-            }
-          });
-
-        }
       }
     });
+
+    const getQuote = (messageRepo, message) => {
+      if (messageRepo.quoteReady && messageRepo.textChannelMessages.hasOwnProperty(message.channel.id)) {
+        const messageLength = messageRepo.textChannelMessages[message.channel.id].length;
+        let completed = false;
+        // give back that random message!
+        do {
+          let randomIdx = Math.floor((Math.random() * messageLength));
+          const chatMessage = messageRepo.textChannelMessages[message.channel.id][randomIdx];
+          if (!chatMessage.author.bot && chatMessage.content.length > 20) {
+            completed = true;
+
+            return {
+              result: 'success',
+              messageObj: chatMessage,
+            };
+          }
+        } while (completed === false);
+      } else if (messageRepo.quoteReady) {
+        return {
+          result: 'failed',
+          message: 'I don\'t have this channel cached, restart bot pls',
+        };
+      } else {
+        return {
+          result: 'failed',
+          message: 'I am still processing the old chat messages...',
+        };
+      }
+    };
   };
   
 
@@ -235,6 +232,18 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
     quoteReady: false,
     textChannelMessages: {},
   });
+};
+
+const getMemeImageList = () => {
+  return new Promise((resolve, reject) => {
+    fetch('http://apimeme.com/images', {
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    .then(res => res.json())
+    .then(json => resolve(json));
+  });
+  reject();
 };
 
 const connect = (mediator, connectionsContainer, bootstrapContainer) => {
