@@ -148,35 +148,35 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
           let resp = null;
 
           do {
-            resp = getQuote(options.messageRepo, message);
+            resp = getQuote(options.messageRepo, message, true);
             if (resp.result === 'success') {
-              if (resp.messageObj.embeds.length === 0) {
-                topText = resp.messageObj.content;
+              if (resp.messageObj.embeds.length === 0 ) {
+                topText = getResolveUsernames(resp.messageObj);
               }
             } else {
               message.reply(resp.message);
               break;
             }
-          } while ( resp.messageObj.embeds.length !== 0 );
+          } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.length > 120 );
 
           do {
-            resp = getQuote(options.messageRepo, message);
+            resp = getQuote(options.messageRepo, message, true);
             if (resp.result === 'success') {
               if (resp.messageObj.embeds.length === 0) {
-                bottomText = resp.messageObj.content;
+                bottomText = getResolveUsernames(resp.messageObj);
               }
             } else {
               message.reply(resp.message);
               break;
             }
-          } while ( resp.messageObj.embeds.length !== 0 );
+          } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.length > 120 );
           
           getMemeImageList().then((success) => {
             const memeType = success[Math.floor((Math.random() * success.length))];
             message.reply(
               {embed: {
                 color: 3447003,
-                title: 'test',
+                title: 'I got a meme for you',
                 image: {
                   url: `http://apimeme.com/meme?meme=${encodeURIComponent(memeType)}&top=${encodeURIComponent(topText)}&bottom=${encodeURIComponent(bottomText)}`
                 }
@@ -192,14 +192,32 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
       }
     });
 
-    const getQuote = (messageRepo, message) => {
-      if (messageRepo.quoteReady && messageRepo.textChannelMessages.hasOwnProperty(message.channel.id)) {
-        const messageLength = messageRepo.textChannelMessages[message.channel.id].length;
+    const getResolveUsernames = (messageObj) => {
+      const message = messageObj.content;
+      const adjustment = message.replace(/<@.*?>/g, ($) => {
+        let trim = $.replace(/[<@!>]/g, '');
+        const asdf = messageObj.mentions.users.get(trim);
+        // console.log(message);
+        return asdf.username;
+      });
+      // console.log(adjustment);
+      return adjustment;
+    };
+
+    const getQuote = (messageRepo, message, randomChannel = false) => {
+      let channelId = message.channel.id;
+      if(randomChannel) {
+        let keys = Object.keys(messageRepo.textChannelMessages);
+        const idx = Math.floor((Math.random() * keys.length));
+        channelId = keys[idx];
+      }
+      if (messageRepo.quoteReady && messageRepo.textChannelMessages.hasOwnProperty(channelId)) {
+        const messageLength = messageRepo.textChannelMessages[channelId].length;
         let completed = false;
         // give back that random message!
         do {
           let randomIdx = Math.floor((Math.random() * messageLength));
-          const chatMessage = messageRepo.textChannelMessages[message.channel.id][randomIdx];
+          const chatMessage = messageRepo.textChannelMessages[channelId][randomIdx];
           if (!chatMessage.author.bot && chatMessage.content.length > 20) {
             completed = true;
 
