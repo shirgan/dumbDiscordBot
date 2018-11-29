@@ -58,15 +58,17 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
                   // console.log(`got ${newMessages.size} new messages!`);
                   messageArr = messageArr.concat(newMessages.array());
                   lastCount = newMessages.size;
-                  lastId = newMessages.array()[newMessages.size - 1].id;
+                  if (newMessages.size > 0) {
+                    lastId = newMessages.array()[newMessages.size - 1].id;
 
-                  if (lastCount === filterRequestCount) {
-                    getChannelMessages();
+                    if (lastCount === filterRequestCount) {
+                      getChannelMessages();
+                    } else {
+                      // done
+                      resolve(messageArr);
+                    }
                   } else {
-                    // done
-                    let channelObj = {};
-                    channelObj[channel.id] = messageArr;
-                    resolve(channelObj);
+                    resolve(messageArr);
                   }
                 }, (err) => {
                   console.log('something went wrong..');
@@ -82,9 +84,8 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
 
     Promise.all(channelPromises).then((success) => {
       console.log('All messages pulled!');
-      options.messageRepo.textChannelMessages = {};
       for (let i in success) {
-        options.messageRepo.textChannelMessages = Object.assign(success[i], options.messageRepo.textChannelMessages);
+        options.messageRepo.textChannelMessages = options.messageRepo.textChannelMessages.concat(success[i]);
       }
       options.messageRepo.quoteReady = true;
     }, (error) => {
@@ -124,7 +125,6 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
         } else if (message.content === '!quote') {
           const resp = getQuote(options.messageRepo, message);
           if(resp.result === 'success') {
-            console.log(resp.messageObj);
             message.reply({embed: {
               color: 3447003,
               title: `Beep bep, old post from ${resp.messageObj.author.username}`,
@@ -148,7 +148,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
           let resp = null;
 
           do {
-            resp = getQuote(options.messageRepo, message, true);
+            resp = getQuote(options.messageRepo);
             if (resp.result === 'success') {
               if (resp.messageObj.embeds.length === 0 ) {
                 topText = getResolveUsernames(resp.messageObj);
@@ -157,10 +157,10 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
               message.reply(resp.message);
               break;
             }
-          } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.length > 120 );
+          } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.indexOf('://') > -1 );
 
           do {
-            resp = getQuote(options.messageRepo, message, true);
+            resp = getQuote(options.messageRepo);
             if (resp.result === 'success') {
               if (resp.messageObj.embeds.length === 0) {
                 bottomText = getResolveUsernames(resp.messageObj);
@@ -169,7 +169,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
               message.reply(resp.message);
               break;
             }
-          } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.length > 120 );
+          } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.indexOf('://') > -1 );
           
           getMemeImageList().then((success) => {
             const memeType = success[Math.floor((Math.random() * success.length))];
@@ -204,20 +204,14 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
       return adjustment;
     };
 
-    const getQuote = (messageRepo, message, randomChannel = false) => {
-      let channelId = message.channel.id;
-      if(randomChannel) {
-        let keys = Object.keys(messageRepo.textChannelMessages);
-        const idx = Math.floor((Math.random() * keys.length));
-        channelId = keys[idx];
-      }
-      if (messageRepo.quoteReady && messageRepo.textChannelMessages.hasOwnProperty(channelId)) {
-        const messageLength = messageRepo.textChannelMessages[channelId].length;
+    const getQuote = (messageRepo) => {
+      if (messageRepo.quoteReady) {
+        const messageLength = messageRepo.textChannelMessages.length;
         let completed = false;
         // give back that random message!
         do {
           let randomIdx = Math.floor((Math.random() * messageLength));
-          const chatMessage = messageRepo.textChannelMessages[channelId][randomIdx];
+          const chatMessage = messageRepo.textChannelMessages[randomIdx];
           if (!chatMessage.author.bot && chatMessage.content.length > 20) {
             completed = true;
 
@@ -248,7 +242,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
     getAllMessages,
     subject,
     quoteReady: false,
-    textChannelMessages: {},
+    textChannelMessages: [],
   });
 };
 
