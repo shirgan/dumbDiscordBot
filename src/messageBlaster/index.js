@@ -151,7 +151,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
             resp = getQuote(options.messageRepo);
             if (resp.result === 'success') {
               if (resp.messageObj.embeds.length === 0 ) {
-                topText = getResolveUsernames(resp.messageObj);
+                topText = formatQuote(getResolveUsernames(resp.messageObj));
               }
             } else {
               message.reply(resp.message);
@@ -163,7 +163,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
             resp = getQuote(options.messageRepo);
             if (resp.result === 'success') {
               if (resp.messageObj.embeds.length === 0) {
-                bottomText = getResolveUsernames(resp.messageObj);
+                bottomText = formatQuote(getResolveUsernames(resp.messageObj));
               }
             } else {
               message.reply(resp.message);
@@ -202,6 +202,34 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
       });
       // console.log(adjustment);
       return adjustment;
+    };
+
+    const formatQuote = (quote) => {
+      const MAX_LINE_LENGTH = 40;
+      let lines = [];
+      let currentLine = '';
+      const words = quote.split(' ').reverse();
+      do {
+        const idx = words.length-1;
+        if (words[idx].length > MAX_LINE_LENGTH) {
+          lines.push(words[idx].substring(0, MAX_LINE_LENGTH));
+          words[idx] = words[idx].substring(MAX_LINE_LENGTH);
+        } else if (words[idx].length === MAX_LINE_LENGTH) {
+          lines.push(words[idx].substring(0, MAX_LINE_LENGTH));
+          words.pop();
+        } else {
+          if (currentLine.length + words[idx].length <= 40) {
+            currentLine+=words[idx]+' ';
+            words.pop();
+          }else {
+            lines.push(currentLine.trim());
+            currentLine = '';
+          }
+        }
+        //console.log(words.length);
+      } while(words.length > 0);
+      lines.push(currentLine.trim());
+      return lines.join('\n');
     };
 
     const getQuote = (messageRepo) => {
