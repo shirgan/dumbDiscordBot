@@ -33,11 +33,11 @@ const Subject = (mediator) => {
 const messageController = (mediator, connectionsContainer, bootstrapContainer) => {  
   const logger = bootstrapContainer.resolve('logger');
   const discordClient = connectionsContainer.resolve('discord');
-  var subject = new Subject(mediator);
-  var wordDict = {};
-  var lastMemeType = "";
-  var lastMemeTopText = "";
-  var lastMemeBottomText = "";
+  const subject = new Subject(mediator);
+
+  let lastMemeType = "";
+  let lastMemeTopText = "";
+  let lastMemeBottomText = "";
 
   const getAllMessages = (options) => {
     let channelPromises = new Array();
@@ -175,11 +175,11 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
 
           // Get all possible meme formats
           getMemeImageList().then((success) => {
-            let memeType = success[Math.floor((Math.random() * success.length))];
+            const memeType = success[Math.floor((Math.random() * success.length))];
 
             if(args.length > 0) {
-              for (var i = 0; i < success.length; i++) {
-                for(var j = 0; j < args.length; j++) {
+              for (let i = 0; i < success.length; i++) {
+                for(let j = 0; j < args.length; j++) {
                   if (success[i].toLowerCase().search(args[j].toLowerCase()) > -1) {
                     memeType = success[i];
                   }
