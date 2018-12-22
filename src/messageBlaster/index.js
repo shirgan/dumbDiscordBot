@@ -175,7 +175,18 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
 
           // Get all possible meme formats
           getMemeImageList().then((success) => {
-            const memeType = success[Math.floor((Math.random() * success.length))];
+            let memeType = success[Math.floor((Math.random() * success.length))];
+
+            if(args.length > 0) {
+              for (var i = 0; i < success.length; i++) {
+                for(var j = 0; j < args.length; j++) {
+                  if (success[i].toLowerCase().search(args[j].toLowerCase()) > -1) {
+                    memeType = success[i];
+                  }
+                }
+              }
+            }
+
             lastMemeType = memeType;
 
             postMemeMessage(message, memeType, topText, bottomText);
@@ -216,14 +227,22 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
             bottomText = lastMemeBottomText;
           }
 
+          // Flip the top and bottom text
+          if(args.indexOf("flip") > -1) {
+            bottomText = lastMemeTopText;
+            topText = lastMemeBottomText;
+
+            lastMemeTopText = topText;
+            lastMemeBottomText = bottomText;
+          }
+
           if(args.indexOf("img") > -1) {
             // Get all possible meme formats
             getMemeImageList().then((success) => {
               const memeType = success[Math.floor((Math.random() * success.length))];
               lastMemeType = memeType;
 
-              postMemeMessage(message, memeType, topText, bottomText);
-              
+              postMemeMessage(message, memeType, topText, bottomText);          
             }, (failed) => {
 
             });
