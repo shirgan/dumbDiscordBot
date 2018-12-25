@@ -101,7 +101,8 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
 
       if(!message.author.bot){
         if (message.content === '!help') {
-          message.reply({embed: {
+          message.reply(
+            {embed: {
               color: 3447003,
               title: 'Project Wiki Help Page Thinger',
               url: 'https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page',
@@ -205,7 +206,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
     };
 
     const formatQuote = (quote) => {
-      const MAX_LINE_LENGTH = 40;
+      const MAX_LINE_LENGTH = 38;
       let lines = [];
       let currentLine = '';
       const words = quote.split(' ').reverse();
@@ -218,7 +219,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
           lines.push(words[idx].substring(0, MAX_LINE_LENGTH));
           words.pop();
         } else {
-          if (currentLine.length + words[idx].length <= 40) {
+          if (currentLine.length + words[idx].length <= MAX_LINE_LENGTH) {
             currentLine+=words[idx]+' ';
             words.pop();
           }else {
