@@ -33,8 +33,11 @@ const Subject = (mediator) => {
 const messageController = (mediator, connectionsContainer, bootstrapContainer) => {  
   const logger = bootstrapContainer.resolve('logger');
   const discordClient = connectionsContainer.resolve('discord');
-  var subject = new Subject(mediator);
-  var wordDict = {};
+  const subject = new Subject(mediator);
+
+  let lastMemeType = "";
+  let lastMemeTopText = "";
+  let lastMemeBottomText = "";
 
   const getAllMessages = (options) => {
     let channelPromises = new Array();
@@ -96,11 +99,15 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
   
   const messageRouter = (options) => {
     discordClient.on('message', message => {
-      // this probably isn't the best way to go about this, but just convert everything to lower case
-      message.content = message.content.toLowerCase();
+      const textPrefix = '!';
+
+      if(message.content.indexOf(textPrefix) !== 0) return;
+
+      const args = message.content.slice(textPrefix.length).trim().split(/ +/g);
+      const command = args.shift().toLowerCase();
 
       if(!message.author.bot){
-        if (message.content === '!help') {
+        if (command === 'help') {
           message.reply(
             {embed: {
               color: 3447003,
@@ -123,18 +130,18 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
               }
             }
           });
-        } else if (message.content === '!quote') {
+        } else if (command === 'quote') {
           const resp = getQuote(options.messageRepo, message);
           if(resp.result === 'success') {
             message.reply({embed: {
               color: 3447003,
               title: `Beep bep, old post from ${resp.messageObj.author.username}`,
-              description: `${resp.messageObj.content} @ ${moment(resp.messageObj.createdTimestamp).format('MM/DD/YYYY hh:mm a')}`,
+              description: `${resp.messageObj.content} @ ${moment(resp.messageObj.createdTimestamp).format('MM/DD/YYYY hh:mm a')} - Sauce: ${resp.messageObj.url}`,
             }});
           } else {
             message.reply(resp.message);
           }
-        } else if (message.content === '!plugins') {
+        } else if (command === 'plugins') {
           const pluginList = options.pluginsRepo.getPluginList();
           message.reply(
             {embed: {
@@ -143,50 +150,108 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
               description: pluginList.map(x => `${x.name}@${x.version} by ${x.author}`).join('\n'),
             }
           });
-        } else if (message.content === '!meme') {
+        } else if (command === 'meme') {
           let topText = 'Top Text';
           let bottomText = 'Bottom Text';
-          let resp = null;
 
-          do {
-            resp = getQuote(options.messageRepo);
-            if (resp.result === 'success') {
-              if (resp.messageObj.embeds.length === 0 ) {
-                topText = formatQuote(getResolveUsernames(resp.messageObj));
-              }
-            } else {
-              message.reply(resp.message);
-              break;
-            }
-          } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.indexOf('://') > -1 );
+          // Force reset the last text to top and bottom to prevent no entries in rememe
+          lastMemeTopText = topText;
+          lastMemeBottomText = bottomText;
 
-          do {
-            resp = getQuote(options.messageRepo);
-            if (resp.result === 'success') {
-              if (resp.messageObj.embeds.length === 0) {
-                bottomText = formatQuote(getResolveUsernames(resp.messageObj));
-              }
-            } else {
-              message.reply(resp.message);
-              break;
-            }
-          } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.indexOf('://') > -1 );
-          
+          let memeTextResponse = null;
+
+          // Get top text
+          memeTextResponse = generateMemeText(options.messageRepo);
+          if (memeTextResponse.result === 'success') {
+            topText = memeTextResponse.memeText;
+            lastMemeTopText = topText;
+          }
+
+          // Get bottom text
+          memeTextResponse = generateMemeText(options.messageRepo);
+          if (memeTextResponse.result === 'success') {
+            bottomText = memeTextResponse.memeText;
+            lastMemeBottomText = bottomText;
+          }
+
+          // Get all possible meme formats
           getMemeImageList().then((success) => {
             const memeType = success[Math.floor((Math.random() * success.length))];
-            message.reply(
-              {embed: {
-                color: 3447003,
-                title: 'I got a meme for you',
-                image: {
-                  url: `http://apimeme.com/meme?meme=${encodeURIComponent(memeType)}&top=${encodeURIComponent(topText)}&bottom=${encodeURIComponent(bottomText)}`
+
+            if(args.length > 0) {
+              for (let i = 0; i < success.length; i++) {
+                for(let j = 0; j < args.length; j++) {
+                  if (success[i].toLowerCase().search(args[j].toLowerCase()) > -1) {
+                    memeType = success[i];
+                  }
                 }
               }
-            });
+            }
+
+            lastMemeType = memeType;
+
+            postMemeMessage(message, memeType, topText, bottomText);
+            
           }, (failed) => {
 
           });
 
+        } else if (command === 'rememe') {
+          if(lastMemeType === "") {
+            message.reply("Whoops! You need to !meme before you can !rememe IDIOT.");
+            return;
+          }
+
+          let topText = 'Top Text';
+          let bottomText = 'Bottom Text';
+          let memeTextResponse = null;
+
+          // Get top text, specifying top as part of the rememe via args will regenerate the top text
+          if(args.indexOf("top") > -1) {
+            memeTextResponse = generateMemeText(options.messageRepo);
+            if (memeTextResponse.result === 'success') {
+              topText = memeTextResponse.memeText;
+              lastMemeTopText = topText;
+            }
+          } else {
+            topText = lastMemeTopText;
+          }
+
+          // Get bottom text, specifying bottom as part of the rememe via args will regenerate the bottom text
+          if(args.indexOf("bottom") > -1) {
+            memeTextResponse = generateMemeText(options.messageRepo);
+            if (memeTextResponse.result === 'success') {
+              bottomText = memeTextResponse.memeText;
+              lastMemeBottomText = bottomText;
+            }
+          } else {
+            bottomText = lastMemeBottomText;
+          }
+
+          // Flip the top and bottom text
+          if(args.indexOf("flip") > -1) {
+            bottomText = lastMemeTopText;
+            topText = lastMemeBottomText;
+
+            lastMemeTopText = topText;
+            lastMemeBottomText = bottomText;
+          }
+
+          if(args.indexOf("img") > -1) {
+            // Get all possible meme formats
+            getMemeImageList().then((success) => {
+              const memeType = success[Math.floor((Math.random() * success.length))];
+              lastMemeType = memeType;
+
+              postMemeMessage(message, memeType, topText, bottomText);          
+            }, (failed) => {
+
+            });
+          } else {
+            // Use the same meme format but whatever text we generated
+            postMemeMessage(message, lastMemeType, topText, bottomText);
+          }
+          
         } else {
           subject.notifyAllObservers(message);
         }
@@ -262,9 +327,44 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
         };
       }
     };
+
+    const generateMemeText = (messageRepo) => {
+      let outText = "GENERATED MEME TEXT";
+      let resp = null;
+
+      do {
+        resp = getQuote(messageRepo);
+        if (resp.result === 'success') {
+          if (resp.messageObj.embeds.length === 0 ) {
+            outText = formatQuote(getResolveUsernames(resp.messageObj));
+          }
+        } else {
+          return {
+            result: 'failed',
+            memeText: "INVALID",
+          };
+          break;
+        }
+      } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.indexOf('://') > -1 );
+
+      return {
+        result: 'success',
+        memeText: outText,
+      };
+    }
   };
   
-
+  const postMemeMessage = (message, memeType, topText, bottomText) => {
+    message.reply(
+      {embed: {
+        color: 3447003,
+        title: 'I got a meme for you',
+        image: {
+          url: `http://apimeme.com/meme?meme=${encodeURIComponent(memeType)}&top=${encodeURIComponent(topText)}&bottom=${encodeURIComponent(bottomText)}`
+        }
+      }
+    });
+  }
 
   return Object.create({
     messageRouter,
