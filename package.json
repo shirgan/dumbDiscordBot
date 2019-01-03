@@ -5,15 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "babel-node ./build/npmScripts/unitTest.js",
-    "serve": "gulp build & cross-env clientId=alsdfjskal npm run start",
+    "build": "npm run clean && npm run babel",
+    "serve": "npm run build & cross-env clientId=fsdgfas npm run start",
     "start": "node dist/backend/index.js",
-    "coverage": "nyc npm run test"
+    "coverage": "nyc npm run test",
+    "clean": "del-cli dist",
+    "babel": "babel ./src -d ./dist/backend --copy-files"
   },
   "author": "dot1q",
   "license": "MIT",
   "dependencies": {
-    "awilix": "^3.0.9",
-    "discord.js": "^11.3.2",
+    "awilix": "^4.0.1",
+    "discord.js": "^11.4.2",
     "ffmpeg-binaries": "^4.0.0",
     "fs": "0.0.1-security",
     "https": "^1.0.0",
@@ -27,25 +30,20 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-beta.53",
-    "@babel/node": "^7.0.0-beta.53",
-    "@babel/preset-env": "^7.0.0-beta.53",
-    "@babel/register": "^7.0.0-beta.53",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.2.2",
+    "@babel/register": "^7.0.0",
     "assert": "^1.4.1",
     "babel-plugin-istanbul": "^4.1.6",
     "core-js": "^2.5.7",
     "cross-env": "^5.2.0",
     "del": "^3.0.0",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^8.0.0-beta.2",
-    "gulp-copy": "^1.0.1",
-    "gulp-eslint": "^4.0.0",
-    "gulp-load-plugins": "^1.5.0",
+    "del-cli": "^1.1.0",
     "jasmine": "^3.3.0",
     "jasmine-core": "^3.3.0",
     "jasmine-reporters": "^2.3.2",
-    "load-gulp-tasks": "^0.1.0",
-    "nyc": "^13.1.0",
-    "run-sequence": "^2.2.1"
+    "nyc": "^13.1.0"
   }
 }
