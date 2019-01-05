@@ -120,6 +120,10 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
                 {
                   name: 'Image Triggers',
                   value: '!img'
+                },
+                {
+                  name: 'Text Triggers',
+                  value: '!quote\n!meme\n!rememe (top, bottom, flip, img)'
                 }
               ],
               timestamp: new Date(),
