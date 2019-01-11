@@ -24,6 +24,7 @@ logger.info('Loading configuration...');
 
 process.on('uncaughtException', (err) => {
   logger.error('Uncaught Exception', err);
+  process.exit(230);
 });
 
 process.on('uncaughtRejection', (err, promise) => {

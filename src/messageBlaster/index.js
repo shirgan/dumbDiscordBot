@@ -139,8 +139,8 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
           if(resp.result === 'success') {
             message.reply({embed: {
               color: 3447003,
-              title: `${resp.messageObj.content}`,
-              url: `${resp.messageObj.url}`,
+              title: 'Test Title, Please Ignore...',
+              description: `${resp.messageObj.content} - [Sauce pls](${resp.messageObj.url})`,
               footer: {
                 text: `From ${resp.messageObj.author.username} @ ${moment(resp.messageObj.createdTimestamp).format('MM/DD/YYYY hh:mm a')}`
               }
