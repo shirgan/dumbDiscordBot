@@ -121,6 +121,10 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
                 {
                   name: 'Image Triggers',
                   value: '!img'
+                },
+                {
+                  name: 'Text Triggers',
+                  value: '!quote\n!meme\n!rememe (top, bottom, flip, img)'
                 }
               ],
               timestamp: new Date(),
@@ -135,8 +139,11 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
           if(resp.result === 'success') {
             message.reply({embed: {
               color: 3447003,
-              title: `Beep bep, old post from ${resp.messageObj.author.username}`,
-              description: `${resp.messageObj.content} @ ${moment(resp.messageObj.createdTimestamp).format('MM/DD/YYYY hh:mm a')} - Sauce: ${resp.messageObj.url}`,
+              title: `${resp.messageObj.content}`,
+              url: `${resp.messageObj.url}`,
+              footer: {
+                text: `From ${resp.messageObj.author.username} @ ${moment(resp.messageObj.createdTimestamp).format('MM/DD/YYYY hh:mm a')}`
+              }
             }});
           } else {
             message.reply(resp.message);
