@@ -1,5 +1,6 @@
 'use strict';
 import moment from 'moment';
+import fetch from 'node-fetch';
 
 const Subject = (mediator) => {
   let observers = [];
@@ -32,8 +33,11 @@ const Subject = (mediator) => {
 const messageController = (mediator, connectionsContainer, bootstrapContainer) => {  
   const logger = bootstrapContainer.resolve('logger');
   const discordClient = connectionsContainer.resolve('discord');
-  var subject = new Subject(mediator);
-  var wordDict = {};
+  const subject = new Subject(mediator);
+
+  let lastMemeType = "";
+  let lastMemeTopText = "";
+  let lastMemeBottomText = "";
 
   const getAllMessages = (options) => {
     let channelPromises = new Array();
@@ -41,7 +45,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
     let channels = discordClient.channels.array();
     for(let idx in channels) {
       const channel = channels[idx];
-      if (channel.type === 'text') {
+      if (channel.type === 'text' && channel.permissionsFor(discordClient.user).has('READ_MESSAGE_HISTORY')) {
         channelPromises.push(
           new Promise((resolve, reject) => {
             let messageArr = new Array();
@@ -49,34 +53,33 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
             let lastId = channel.lastMessageID;
             let filterRequestCount = 100;
 
-            
-            if (channel.permissionsFor(discordClient.user).has('READ_MESSAGE_HISTORY')) {
-              console.log(`Gathering messages from... ${channel.guild.name}:${channel.name}`);
+            console.log(`Gathering messages from... ${channel.guild.name}:${channel.name}`);
 
-              const getChannelMessages = () => {
-                channel.fetchMessages({limit: filterRequestCount, before: lastId})
-                  .then((newMessages) => {
-                    // console.log(`got ${newMessages.size} new messages!`);
-                    messageArr = messageArr.concat(newMessages.array());
-                    lastCount = newMessages.size;
+            const getChannelMessages = () => {
+              channel.fetchMessages({limit: filterRequestCount, before: lastId})
+                .then((newMessages) => {
+                  // console.log(`got ${newMessages.size} new messages!`);
+                  messageArr = messageArr.concat(newMessages.array());
+                  lastCount = newMessages.size;
+                  if (newMessages.size > 0) {
                     lastId = newMessages.array()[newMessages.size - 1].id;
 
                     if (lastCount === filterRequestCount) {
                       getChannelMessages();
                     } else {
                       // done
-                      console.log('the deed is done');
-                      let channelObj = {};
-                      channelObj[channel.id] = messageArr;
-                      resolve(channelObj);
+                      resolve(messageArr);
                     }
-                  }, (err) => {
-                    reject(new Error(err));
-                  });
-              };
+                  } else {
+                    resolve(messageArr);
+                  }
+                }, (err) => {
+                  console.log('something went wrong..');
+                  reject(new Error(err));
+                });
+            };
 
-              getChannelMessages();
-            }
+            getChannelMessages();
           })
         );
       }
@@ -84,9 +87,8 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
 
     Promise.all(channelPromises).then((success) => {
       console.log('All messages pulled!');
-      options.messageRepo.textChannelMessages = {};
       for (let i in success) {
-        options.messageRepo.textChannelMessages = Object.assign(success[i], options.messageRepo.textChannelMessages);
+        options.messageRepo.textChannelMessages = options.messageRepo.textChannelMessages.concat(success[i]);
       }
       options.messageRepo.quoteReady = true;
     }, (error) => {
@@ -97,12 +99,17 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
   
   const messageRouter = (options) => {
     discordClient.on('message', message => {
-      // this probably isn't the best way to go about this, but just convert everything to lower case
-      message.content = message.content.toLowerCase();
+      const textPrefix = '!';
+
+      if(message.content.indexOf(textPrefix) !== 0) return;
+
+      const args = message.content.slice(textPrefix.length).trim().split(/ +/g);
+      const command = args.shift().toLowerCase();
 
       if(!message.author.bot){
-        if (message.content === '!help') {
-          message.reply({embed: {
+        if (command === 'help') {
+          message.reply(
+            {embed: {
               color: 3447003,
               title: 'Project Wiki Help Page Thinger',
               url: 'https://github.com/dot1q/dumbDiscordBot/wiki/DumbDiscordBot-Help-Page',
@@ -114,6 +121,10 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
                 {
                   name: 'Image Triggers',
                   value: '!img'
+                },
+                {
+                  name: 'Text Triggers',
+                  value: '!quote\n!meme\n!rememe (top, bottom, flip, img)'
                 }
               ],
               timestamp: new Date(),
@@ -123,112 +134,264 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
               }
             }
           });
-        } else if (message.content === '!join' || message.content === '!listen') {
-          options.voiceRepo.joinChannel(message);
-        } else if (message.content === '!leave' || message.content === '!go away') {
-          mediator.emit('soundBlaster:halt');
-          options.voiceRepo.leaveChannel(message);
-        } else if (message.content === '!speechreport') {
-          options.voiceRepo.speechReport(message);
-        } else if (message.content.indexOf('!replay', 0) > 0) {
-          options.voiceRepo.replay(message);
-        } else if (message.content === '!quote') {
-          if (options.messageRepo.quoteReady && options.messageRepo.textChannelMessages.hasOwnProperty(message.channel.id)) {
-            const messageLength = options.messageRepo.textChannelMessages[message.channel.id].length;
-            let completed = false;
-            // give back that random message!
-            do {
-              let randomIdx = Math.floor((Math.random() * messageLength));
-              const chatMessage = options.messageRepo.textChannelMessages[message.channel.id][randomIdx];
-              if (!chatMessage.author.bot && chatMessage.content.length > 20) {
-                completed = true;
-
-                message.reply({embed: {
-                  color: 3447003,
-                  title: `Beep bep, old post from ${chatMessage.author.username}`,
-                  description: `${chatMessage.content} @ ${moment(chatMessage.createdTimestamp).format('MM/DD/YYYY hh:mm a')}`,
-                }});
-              }
-            } while (completed === false);
-          } else if (options.messageRepo.quoteReady) {
+        } else if (command === 'quote') {
+          const resp = getQuote(options.messageRepo, message);
+          if(resp.result === 'success') {
             message.reply({embed: {
               color: 3447003,
-              title: 'Quote machine broke!',
-              description: 'I don\'t have this channel cached, restart bot pls',
+              title: 'Test Title, Please Ignore...',
+              description: `${resp.messageObj.content} - [Sauce pls](${resp.messageObj.url})`,
+              footer: {
+                text: `From ${resp.messageObj.author.username} @ ${moment(resp.messageObj.createdTimestamp).format('MM/DD/YYYY hh:mm a')}`
+              }
             }});
           } else {
-              message.reply(
-                {embed: {
-                  color: 3447003,
-                  title: 'I need more time!',
-                  description: 'I am still processing the old chat messages...',
-                }
-              });
+            message.reply(resp.message);
           }
+        } else if (command === 'plugins') {
+          const pluginList = options.pluginsRepo.getPluginList();
+          message.reply(
+            {embed: {
+              color: 3447003,
+              title: 'Current Plugins',
+              description: pluginList.map(x => `${x.name}@${x.version} by ${x.author}`).join('\n'),
+            }
+          });
+        } else if (command === 'meme') {
+          let topText = 'Top Text';
+          let bottomText = 'Bottom Text';
+
+          // Force reset the last text to top and bottom to prevent no entries in rememe
+          lastMemeTopText = topText;
+          lastMemeBottomText = bottomText;
+
+          let memeTextResponse = null;
+
+          // Get top text
+          memeTextResponse = generateMemeText(options.messageRepo);
+          if (memeTextResponse.result === 'success') {
+            topText = memeTextResponse.memeText;
+            lastMemeTopText = topText;
+          }
+
+          // Get bottom text
+          memeTextResponse = generateMemeText(options.messageRepo);
+          if (memeTextResponse.result === 'success') {
+            bottomText = memeTextResponse.memeText;
+            lastMemeBottomText = bottomText;
+          }
+
+          // Get all possible meme formats
+          getMemeImageList().then((success) => {
+            const memeType = success[Math.floor((Math.random() * success.length))];
+
+            if(args.length > 0) {
+              for (let i = 0; i < success.length; i++) {
+                for(let j = 0; j < args.length; j++) {
+                  if (success[i].toLowerCase().search(args[j].toLowerCase()) > -1) {
+                    memeType = success[i];
+                  }
+                }
+              }
+            }
+
+            lastMemeType = memeType;
+
+            postMemeMessage(message, memeType, topText, bottomText);
+            
+          }, (failed) => {
+
+          });
+
+        } else if (command === 'rememe') {
+          if(lastMemeType === "") {
+            message.reply("Whoops! You need to !meme before you can !rememe IDIOT.");
+            return;
+          }
+
+          let topText = 'Top Text';
+          let bottomText = 'Bottom Text';
+          let memeTextResponse = null;
+
+          // Get top text, specifying top as part of the rememe via args will regenerate the top text
+          if(args.indexOf("top") > -1) {
+            memeTextResponse = generateMemeText(options.messageRepo);
+            if (memeTextResponse.result === 'success') {
+              topText = memeTextResponse.memeText;
+              lastMemeTopText = topText;
+            }
+          } else {
+            topText = lastMemeTopText;
+          }
+
+          // Get bottom text, specifying bottom as part of the rememe via args will regenerate the bottom text
+          if(args.indexOf("bottom") > -1) {
+            memeTextResponse = generateMemeText(options.messageRepo);
+            if (memeTextResponse.result === 'success') {
+              bottomText = memeTextResponse.memeText;
+              lastMemeBottomText = bottomText;
+            }
+          } else {
+            bottomText = lastMemeBottomText;
+          }
+
+          // Flip the top and bottom text
+          if(args.indexOf("flip") > -1) {
+            bottomText = lastMemeTopText;
+            topText = lastMemeBottomText;
+
+            lastMemeTopText = topText;
+            lastMemeBottomText = bottomText;
+          }
+
+          if(args.indexOf("img") > -1) {
+            // Get all possible meme formats
+            getMemeImageList().then((success) => {
+              const memeType = success[Math.floor((Math.random() * success.length))];
+              lastMemeType = memeType;
+
+              postMemeMessage(message, memeType, topText, bottomText);          
+            }, (failed) => {
+
+            });
+          } else {
+            // Use the same meme format but whatever text we generated
+            postMemeMessage(message, lastMemeType, topText, bottomText);
+          }
+          
         } else {
           subject.notifyAllObservers(message);
         }
-        
-        // if word is not !topWords
-        if(message.content !== '!topwords'){
-          let messageArr = message.content.split(' ');
-          
-          for(let i=0; i<messageArr.length; i++){ 
-            if(wordDict[messageArr[i]] !== undefined && wordDict[messageArr[i]] >= 0) {
-              wordDict[messageArr[i]]++;
-            } else {
-              wordDict[messageArr[i]] = 1;
-            }
-          }
-          
-        } else {
-          let messageStr = '';
-          let sortable = [];
-          let counter = 0;
-          
-          for (var i in wordDict) {
-            sortable.push([i, wordDict[i]]);
-          }
-          
-          sortable.sort(function(a, b) {
-              return a[1] - b[1];
-          });
-          
-          for(let i in sortable.reverse()) {
-            messageStr += sortable[i][0]+': '+ sortable[i][1] + ' times\r';
-            
-            if(counter <= 9 ) {
-              counter++;
-            } else {
-              break;
-            }
-          }
-          
-          message.reply({embed: {
-              color: 3447003,
-              title: 'Top Words!',
-              description: 'Here are the top 10 words:\r'+messageStr,
-              timestamp: new Date(),
-              footer: {
-                text: '© Deez nuts'
-              }
-            }
-          });
+      }
+    });
 
+    const getResolveUsernames = (messageObj) => {
+      const message = messageObj.content;
+      const adjustment = message.replace(/<@.*?>/g, ($) => {
+        let trim = $.replace(/[<@!>]/g, '');
+        const asdf = messageObj.mentions.users.get(trim);
+        // console.log(message);
+        return asdf.username;
+      });
+      // console.log(adjustment);
+      return adjustment;
+    };
+
+    const formatQuote = (quote) => {
+      const MAX_LINE_LENGTH = 38;
+      let lines = [];
+      let currentLine = '';
+      const words = quote.split(' ').reverse();
+      do {
+        const idx = words.length-1;
+        if (words[idx].length > MAX_LINE_LENGTH) {
+          lines.push(words[idx].substring(0, MAX_LINE_LENGTH));
+          words[idx] = words[idx].substring(MAX_LINE_LENGTH);
+        } else if (words[idx].length === MAX_LINE_LENGTH) {
+          lines.push(words[idx].substring(0, MAX_LINE_LENGTH));
+          words.pop();
+        } else {
+          if (currentLine.length + words[idx].length <= MAX_LINE_LENGTH) {
+            currentLine+=words[idx]+' ';
+            words.pop();
+          }else {
+            lines.push(currentLine.trim());
+            currentLine = '';
+          }
+        }
+        //console.log(words.length);
+      } while(words.length > 0);
+      lines.push(currentLine.trim());
+      return lines.join('\n');
+    };
+
+    const getQuote = (messageRepo) => {
+      if (messageRepo.quoteReady) {
+        const messageLength = messageRepo.textChannelMessages.length;
+        let completed = false;
+        // give back that random message!
+        do {
+          let randomIdx = Math.floor((Math.random() * messageLength));
+          const chatMessage = messageRepo.textChannelMessages[randomIdx];
+          if (!chatMessage.author.bot && chatMessage.content.length > 20) {
+            completed = true;
+
+            return {
+              result: 'success',
+              messageObj: chatMessage,
+            };
+          }
+        } while (completed === false);
+      } else if (messageRepo.quoteReady) {
+        return {
+          result: 'failed',
+          message: 'I don\'t have this channel cached, restart bot pls',
+        };
+      } else {
+        return {
+          result: 'failed',
+          message: 'I am still processing the old chat messages...',
+        };
+      }
+    };
+
+    const generateMemeText = (messageRepo) => {
+      let outText = "GENERATED MEME TEXT";
+      let resp = null;
+
+      do {
+        resp = getQuote(messageRepo);
+        if (resp.result === 'success') {
+          if (resp.messageObj.embeds.length === 0 ) {
+            outText = formatQuote(getResolveUsernames(resp.messageObj));
+          }
+        } else {
+          return {
+            result: 'failed',
+            memeText: "INVALID",
+          };
+          break;
+        }
+      } while ( resp.messageObj.embeds.length !== 0 || resp.messageObj.content.indexOf('://') > -1 );
+
+      return {
+        result: 'success',
+        memeText: outText,
+      };
+    }
+  };
+  
+  const postMemeMessage = (message, memeType, topText, bottomText) => {
+    message.reply(
+      {embed: {
+        color: 3447003,
+        title: 'I got a meme for you',
+        image: {
+          url: `http://apimeme.com/meme?meme=${encodeURIComponent(memeType)}&top=${encodeURIComponent(topText)}&bottom=${encodeURIComponent(bottomText)}`
         }
       }
     });
-  };
-  
-
+  }
 
   return Object.create({
     messageRouter,
     getAllMessages,
     subject,
     quoteReady: false,
-    textChannelMessages: {},
+    textChannelMessages: [],
   });
+};
+
+const getMemeImageList = () => {
+  return new Promise((resolve, reject) => {
+    fetch('http://apimeme.com/images', {
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    .then(res => res.json())
+    .then(json => resolve(json));
+  });
+  reject();
 };
 
 const connect = (mediator, connectionsContainer, bootstrapContainer) => {

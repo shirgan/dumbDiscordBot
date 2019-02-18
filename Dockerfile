@@ -17,9 +17,8 @@ RUN apk add --no-cache --update alpine-sdk ffmpeg git python
 RUN chown -R nupp:nupp $HOME/* /usr/local/bin/dumb-init && \
     chmod +x /usr/local/bin/dumb-init && \
     npm cache clean --force && \
-    npm install -g gulp && \
     npm install --silent --progress=false && \
-    gulp build && \
+    npm run build && \
     rm -rf src && \
     npm prune --production && \
     chown -R nupp:nupp $HOME/*

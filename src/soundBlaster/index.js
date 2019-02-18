@@ -115,19 +115,23 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
   const joinVoiceChannel = (message) => {
     return new Promise((resolve, reject) => {
       if (message.member.voiceChannel) {
-        if (message.member.voiceChannel !== discordVoiceChannel) {
-          message.member.voiceChannel.join()
-          .then(connection => { // Connection is an instance of VoiceConnection
-            discordMessageObj = message;
-            discordVoiceChannel = message.member.voiceChannel;
-            discordConnectionObj = connection;
-            
-            mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
-            
+        if (message.member.voiceChannel.permissionsFor(discordClient.user).has('CONNECT')) {
+          if (message.member.voiceChannel !== discordVoiceChannel) {
+            message.member.voiceChannel.join()
+            .then(connection => { // Connection is an instance of VoiceConnection
+              discordMessageObj = message;
+              discordVoiceChannel = message.member.voiceChannel;
+              discordConnectionObj = connection;
+              
+              mediator.emit('generic.log', 'Joined voice channel: '+ discordVoiceChannel.name);
+              
+              resolve();
+            });
+          } else {
             resolve();
-          });
+          }
         } else {
-          resolve();
+          message.reply(`I do not have permission to join ${message.member.voiceChannel}`);
         }
         
       } else {
@@ -165,13 +169,13 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
       setTimeout(() => {
         if (soundQueue.length === 0) {
           let chance = Math.floor(Math.random()*10);
-          //if(chance === 9) {
+          if(chance === 9) {
             discordMessageObj.channel.send('swag out', {
               files: [
                 getRandomFile(imageFiles)
               ]
             });
-          //}
+          }
           if(options.global.stickyVoiceChannel === false) {
             mediator.emit('generic.log', 'Leaving voice channel: '+ discordVoiceChannel.name);
             discordVoiceChannel.leave();
