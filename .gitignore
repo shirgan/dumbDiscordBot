@@ -16,4 +16,3 @@ node_modules/
 /dist/
 /target
 package-lock.json
-.nyc_output

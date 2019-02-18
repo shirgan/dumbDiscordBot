@@ -27,20 +27,9 @@ const pluginController = (mediator, connectionsContainer, bootstrapContainer) =>
     return plugins;
   };
 
-  const getPluginList = () => {
-    return plugins.map(plugin => {
-      return {
-        name: plugin.name,
-        version: plugin.version,
-        author: plugin.author,
-      };
-    });
-  };
-
   return Object.create({
     loadPlugins,
-    getPlugins,
-    getPluginList
+    getPlugins
   });
 };
 

@@ -57,7 +57,7 @@ This section aims to address the various types of components and data flows that
 4. Back End Services
 
 ### Dev Environment
-The development environment will consist of using nodeJS with ffmpeg-binaries.
+The development environment will consist of using nodeJS and gulp.
 
 To set up a dev environment:
 1. Install latest versions of nodeJS and NPM
@@ -68,15 +68,24 @@ To set up a dev environment:
 
 ### Building and Running the Bot
 1) make sure you have run the setup commands from the section above^
-2) ```npm run build```
+2) ```gulp build```
 3) ```clientId=test node ./dist/backend/index.js```
 Note: If you remove the token argument, you must specify the token in the config file
 
+### Prod deployment
+Note: This bot is still in development, so as of right now it is recommended that the bot run from the dist folder, allowing for easy updating to new releases. However, if you feel that you must run in a folder not managed by the gulpfile or git branch, make sure you perform the following commands
+
 1) make sure you have run the setup commands from the section above^
-2) ```npm run build```
+2) ```gulp build:backend```
 3) copy the dist contents to your new location
 4) edit the ```config/config.js``` to include your clientId token. Likewise if you define it as a process env var you don't need to do this
 5) Actaully don't do this, since there is currently no expand/compile task written for adding node modules and package.json is missing. 
+
+### Gulp Command Reference
+The following gulp command reference
+* ```gulp clean``` - Cleans out dist folder
+* ```gulp build:backend``` - Builds the project (clean, copy, babel)
+* ```gulp lint``` - Still not fully ready
 
 # Exception handling
 All exceptions will be handled within the main thread of the application. Mediator broadcasts of unhandled or unexpected exceptions will be handeled the same, unless specific module requirements specify otherwise. All exceptions will be logged using the applications logger. 

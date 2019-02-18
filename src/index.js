@@ -23,16 +23,10 @@ logger.info('--- Dumb Discord Bot Service ---');
 logger.info('Loading configuration...');
 
 process.on('uncaughtException', (err) => {
-  logger.error('Uncaught Exception', err);
-  process.exit(230);
+  logger.error('Unhandled Exception', err);
 });
 
 process.on('uncaughtRejection', (err, promise) => {
-  logger.error('Unhandled Rejection', err);
-  process.exit(230);
-});
-
-process.on('unhandledException', (err, promise) => {
   logger.error('Unhandled Rejection', err);
 });
 

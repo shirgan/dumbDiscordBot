@@ -3,6 +3,13 @@ import fs from 'fs';
 import path from 'path';
 import https from 'https';
 
+const generateImageFileList = (dir) => {
+  return fs.readdirSync(dir)
+  .map(file => {
+      return path.join(dir, file);
+  });
+};
+
 const messageController = (mediator, connectionsContainer, bootstrapContainer, giphyOptions) => {
   const logger = bootstrapContainer.resolve('logger');
   const discordClient = connectionsContainer.resolve('discord');

@@ -39,13 +39,6 @@
       "location": [
         "/sounds/duke/"
       ]
-    },{
-      "keyword": [
-	"!rando"
-      ],
-      "location": [
-	"/sounds/random/"
-      ]
     }
   ],
   "imageLocations": [

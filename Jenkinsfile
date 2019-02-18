@@ -14,8 +14,8 @@ node {
       sh 'npm install'
     }
     
-    stage('NPM Build') {
-      sh 'npm run build'
+    stage('Gulp Build') {
+      sh 'gulp build'
       sh 'npm run coverage'
     }
     
