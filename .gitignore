@@ -17,4 +17,4 @@ node_modules/
 /target
 package-lock.json
 .nyc_output
-.reapeaks
+*.reapeaks
