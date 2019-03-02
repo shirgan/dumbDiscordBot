@@ -6,7 +6,7 @@
   "scripts": {
     "test": "babel-node ./build/npmScripts/unitTest.js",
     "build": "npm run clean && npm run babel",
-    "serve": "npm run build & cross-env clientId=fsdgfas npm run start",
+    "serve": "npm run build && cross-env clientId=fsdgfas npm run start",
     "start": "node dist/backend/index.js",
     "coverage": "nyc npm run test",
     "clean": "del-cli dist",
