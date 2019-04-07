@@ -1,10 +1,14 @@
 'use strict';
 
+import fs from 'fs';
+import path from 'path';
+
 const soundController = (mediator, connectionsContainer, bootstrapContainer) => {
   const logger = bootstrapContainer.resolve('logger');
   const discordClient = connectionsContainer.resolve('discord');
   let soundTriggers = [];
   let imageFiles = [];
+  let mixFiles = new Map();
 
   let discordMessageObj = null;
   let discordConnectionObj = null;
@@ -49,20 +53,34 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
   const Observer = function() {
     return {
       notify: function(message) {
-        // run it against the plugins
-        for (let i = 0; i < soundTriggers.length; i++) {
-          const triggers = soundTriggers[i].keyword;
-          for (let j = 0; j < triggers.length; j++) {
-            if (message.content === triggers[j]) {
-              joinVoiceChannel(message).then(() => {
-                prepPluginSoundFile(soundTriggers[i]);
-              });
+      mediator.emit('generic.log', message.content);
+      if(message.content === "!mix") {
+        joinVoiceChannel(message).then(() => {
+          playMixSound();
+      });
+      } else {
+          // run it against the plugins
+          for (let i = 0; i < soundTriggers.length; i++) {
+            const triggers = soundTriggers[i].keyword;
+            for (let j = 0; j < triggers.length; j++) {
+              if (message.content === triggers[j]) {
+                joinVoiceChannel(message).then(() => {
+                  prepPluginSoundFile(soundTriggers[i]);
+                });
+              }
             }
           }
         }
       }
     };
   };
+
+  const playMixSound = () => {
+    var category = Array.from(mixFiles.keys())[Math.floor(Math.random() * Array.from(mixFiles.keys()).length)];
+    mediator.emit('generic.log', 'Mix category: '+ category);
+    addToQueue(getRandomFile(mixFiles.get(category).get('1')));
+    addToQueue(getRandomFile(mixFiles.get(category).get('2')));
+  }
 
   const mergeSoundTriggers = (sndList) => {
     let addedCount = 0;
@@ -80,6 +98,34 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
     }
     return false;
   };
+
+  const loadMixSounds = () => {
+    const categories = fs.readdirSync(path.join(__dirname, '../assets/mix'));
+    // Mix sounds are in files named <category>-<num>. There should be a 1 and 2 for each category.
+    for(let i in categories) {
+      // Get the information about this category
+      const categoryPath = path.join(__dirname, '../assets/mix', categories[i]);
+      const categoryName = categories[i].split("-")[0];
+      const categoryNum = categories[i].split("-")[1];
+      const soundsNames = fs.readdirSync(categoryPath);
+      const sounds = soundsNames.map(x => path.join(categoryPath, x))
+      // If we haven't seen this category yet, add it to the mapFiles dict.
+      if(!mixFiles.has(categoryName)) {
+        mixFiles.set(categoryName, new Map());
+      }
+      if(sounds.length > 0) {
+        mixFiles.get(categoryName).set(categoryNum, sounds);
+      }
+      logger.warn(`Mix category ${categories[i]} loaded.`);
+    }
+    // Delete empty or partial categories
+    for(let i of mixFiles) {
+      if(!i[1].has('1') || !i[1].has('2')) {
+        mixFiles.delete(i[0]);
+        logger.warn(`Removed empty mix category ${i[0]}.`);
+      }
+    }
+  };
   
   const soundProcessor = (options, soundObj) => {
     const plugins = options.pluginsRepo.getPlugins();
@@ -93,6 +139,8 @@ const soundController = (mediator, connectionsContainer, bootstrapContainer) => 
         };
       }
     }
+
+    loadMixSounds();
 
     let observer = new Observer();
     options.messageRepo.subject.subscribeObserver(observer, 'SoundBlaster');

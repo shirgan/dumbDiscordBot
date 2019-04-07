@@ -116,7 +116,7 @@ const messageController = (mediator, connectionsContainer, bootstrapContainer) =
               description: 'Attention users, please hold on! The saws are on the way!',
               fields: [{
                   name: 'Sound Triggers',
-                  value: '!rando\n!hoors\n!doot\n\!beep\n!duke\n!rimjob\ngotem\nno\n!city14\n!dab\r!h3h3'
+                  value: '!rando\n!mix\n!hoors\n!doot\n\!beep\n!duke\n!rimjob\ngotem\nno\n!city14\n!dab\n!h3h3'
                 },
                 {
                   name: 'Image Triggers',
